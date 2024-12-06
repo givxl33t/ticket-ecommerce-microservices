@@ -3,9 +3,8 @@ import axios from 'axios';
 const buildClient = ({ req }) => {
   if (typeof window === 'undefined') {
     // we are on the server!
-
     const response = axios.create({
-      baseURL: 'http://www.givxl33t.site/',
+      baseURL: process.env.API_GATEWAY_URL,
       headers: req.headers
     });
 

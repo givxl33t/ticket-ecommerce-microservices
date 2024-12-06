@@ -7,8 +7,6 @@ manifests:
 build:
   local:
     push: false
-  # googleCloudBuild:
-  #   projectId: ticketing-dev-397517 
   artifacts:
     - image: romenzonez/ticketing-auth
       context: auth
