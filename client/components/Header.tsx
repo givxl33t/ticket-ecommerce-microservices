@@ -15,26 +15,14 @@ import {
   Drawer,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useState, useEffect } from "react";
-import { fetchApi } from "@/lib/apiWrapper";
+import { useState } from "react";
+import { useAuth } from "@/providers/auth";
 
 const drawerWidth = 240;
 
-const Header = () => {
+export default function Header() {
+  const { currentUser } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetchApi<{ currentUser: never }>('/api/users/currentuser');
-        setCurrentUser(response.currentUser);
-      } catch (error) {
-        console.error('Failed', error)
-      }
-    };
-    fetchUser();
-  }, []);
 
   const links = [
     !currentUser && {
@@ -57,7 +45,7 @@ const Header = () => {
       label: "Sign Out",
       href: "/auth/signout",
     },
-  ].filter(Boolean)
+  ].filter(Boolean);
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -65,23 +53,22 @@ const Header = () => {
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
+      <Typography component={Link} href={"/"} variant="h6" sx={{ my: 2 }}>
         Tix-Micro
       </Typography>
       <Divider />
       <List>
-        {links
-          .map((linkConfig) => {
-            if (!linkConfig) return null;
-            const { label, href } = linkConfig;
-            return (
-              <ListItem key={href} disablePadding>
-                <ListItemButton LinkComponent={Link} href={href} sx={{ textAlign: "center" }}>
-                  {label}
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
+        {links.map((linkConfig) => {
+          if (!linkConfig) return null;
+          const { label, href } = linkConfig;
+          return (
+            <ListItem key={href} disablePadding>
+              <ListItemButton LinkComponent={Link} href={href} sx={{ textAlign: "center" }}>
+                {label}
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
       </List>
     </Box>
   );
@@ -101,22 +88,22 @@ const Header = () => {
           </IconButton>
           <Typography
             variant="h6"
-            component="div"
+            component={Link}
+            href="/"
             sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
           >
             Tix-Micro
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {links
-              .map((linkConfig) => {
-                if (!linkConfig) return null;
-                const { label, href } = linkConfig;
-                return (
-                  <Button key={href} LinkComponent={Link} href={href} sx={{ color: "#fff" }}>
-                    {label}
-                  </Button>
-                );
-              })}
+            {links.map((linkConfig) => {
+              if (!linkConfig) return null;
+              const { label, href } = linkConfig;
+              return (
+                <Button key={href} LinkComponent={Link} href={href} sx={{ color: "#fff" }}>
+                  {label}
+                </Button>
+              );
+            })}
           </Box>
         </Toolbar>
       </AppBar>
@@ -138,6 +125,4 @@ const Header = () => {
       </nav>
     </>
   );
-};
-
-export default Header;
+}

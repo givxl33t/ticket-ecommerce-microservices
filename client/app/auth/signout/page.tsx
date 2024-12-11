@@ -1,25 +1,41 @@
-'use client'
+"use client";
 
-import { useRouter } from "next/navigation"
-import { useCallback, useEffect } from "react"
-import { fetchApi } from "@/lib/apiWrapper";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useAuth } from "@/providers/auth";
+import { Box, Typography, CircularProgress } from "@mui/material";
+import useRequest from "@/hooks/useRequest";
 
-const SignOut = () => {
+export default function SignOut() {
+  const { refreshUser } = useAuth();
   const router = useRouter();
-
-  const signOutAction = useCallback(async () => {
-    try {
-      await fetchApi('/api/users/signout');
-      router.push('/');
-    } catch (error) {
-      console.error('Failed', error);
-    }
-  }, [router]);
+  const { doRequest } = useRequest({
+    url: "/api/users/signout",
+    method: "post",
+    body: {},
+    onSuccess: () => {
+      refreshUser();
+      router.push("/");
+    },
+  });
 
   useEffect(() => {
-    signOutAction();
-  }, [signOutAction]);
+    doRequest();
+  }, [doRequest]);
 
-  return <div>Signing out...</div>;
-};
-export default SignOut
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      height="100vh"
+      bgcolor="background.default"
+    >
+      <CircularProgress color="primary" />
+      <Typography variant="h6" sx={{ marginTop: 2 }}>
+        Signing out...
+      </Typography>
+    </Box>
+  );
+}

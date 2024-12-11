@@ -1,31 +1,33 @@
-'use client'
+"use client";
 
 import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { FormEvent } from "react";
-import { fetchApi } from "@/lib/apiWrapper";
+import { FormEvent, useState } from "react";
+import useRequest from "@/hooks/useRequest";
+import { useAuth } from "@/providers/auth";
 
-const SignIn = () => {
-  const router = useRouter()
+export default function SignIn() {
+  const { refreshUser } = useAuth();
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { doRequest, errors } = useRequest({
+    url: "/api/users/signin",
+    method: "post",
+    body: {
+      email,
+      password,
+    },
+    onSuccess: () => {
+      refreshUser();
+      router.push("/");
+    },
+  });
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-
-    try {
-      const email = formData.get('email') as string
-      const password = formData.get('password') as string
-      await fetchApi('/api/users/signin', {
-        method: 'POST',
-        body: JSON.stringify({
-          email, password
-        })
-      })
-      router.push('/')
-    } catch (error) {
-      console.error("Failed", error)
-    }
-  }
+    event.preventDefault();
+    await doRequest();
+  };
 
   return (
     <Container maxWidth="xs">
@@ -33,14 +35,13 @@ const SignIn = () => {
         component="form"
         onSubmit={handleSubmit}
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
           padding: 3,
           borderRadius: 1,
           boxShadow: 3,
-          backgroundColor: 'white',
-          mt: 15
+          backgroundColor: "white",
         }}
       >
         <Typography variant="h5" sx={{ marginBottom: 2 }}>
@@ -50,21 +51,26 @@ const SignIn = () => {
         <TextField
           name="email"
           label="Email"
+          type="email"
+          onChange={(e) => setEmail(e.target.value)}
           variant="outlined"
           fullWidth
           required
           sx={{ marginBottom: 2 }}
         />
-        
+
         <TextField
           name="password"
           label="Password"
           type="password"
+          onChange={(e) => setPassword(e.target.value)}
           variant="outlined"
           fullWidth
           required
           sx={{ marginBottom: 2 }}
         />
+
+        {errors && <Box sx={{ width: "100%", marginBottom: "1rem" }}>{errors}</Box>}
 
         <Button
           type="submit"
@@ -78,6 +84,4 @@ const SignIn = () => {
       </Box>
     </Container>
   );
-};
-
-export default SignIn
+}

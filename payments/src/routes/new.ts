@@ -20,10 +20,6 @@ router.post(
   '/api/payments',
   requireAuth,
   [
-    body('token')
-      .not()
-      .isEmpty()
-      .withMessage('Token is required'),
     body('orderId')
       .not()
       .isEmpty()
@@ -31,7 +27,7 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { token, orderId } = req.body;
+    const { orderId } = req.body;
 
     const order = await Order.findById(orderId);
 
@@ -47,15 +43,19 @@ router.post(
       throw new BadRequestError('Cannot pay for a cancelled order');
     }
 
-    const charge = await stripe.charges.create({
-      currency: 'usd',
+    const paymentIntent = await stripe.paymentIntents.create({
       amount: order.price * 100,
-      source: token,
+      currency: 'usd',
+      description: `Ticket for ${order.id}`,
+      payment_method_types: ['card'],
+      metadata: {
+        orderId: order.id,
+      }
     });
 
     const payment = Payment.build({
       orderId,
-      stripeId: charge.id,
+      stripeId: paymentIntent.client_secret as string,
     });
     await payment.save();
 
@@ -65,7 +65,7 @@ router.post(
       stripeId: payment.stripeId,
     });
 
-    res.status(201).send({ id: payment.id });
+    res.status(201).send({ id: payment.stripeId });
   }
 )
 
