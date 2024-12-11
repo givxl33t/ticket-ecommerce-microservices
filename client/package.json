@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
@@ -17,7 +19,8 @@
     "axios": "^1.7.9",
     "next": "14.2.19",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "typescript": "^5"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -27,7 +30,6 @@
     "eslint-config-next": "14.2.19",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "prettier": "^3.4.2",
-    "typescript": "^5"
+    "prettier": "^3.4.2"
   }
 }

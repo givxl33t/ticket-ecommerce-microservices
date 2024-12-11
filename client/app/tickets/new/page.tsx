@@ -13,7 +13,10 @@ export default function NewTicket() {
     url: "/api/tickets",
     method: "post",
     body: { title, price },
-    onSuccess: () => router.push("/"),
+    onSuccess: () => {
+      router.push("/");
+      router.refresh();
+    }
   });
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {

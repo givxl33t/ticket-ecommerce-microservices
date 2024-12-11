@@ -20,6 +20,7 @@ build:
       context: client
       docker:
         dockerfile: Dockerfile
+        target: development-build-stage
       sync:
         manual:
           - src: '**/*.ts'

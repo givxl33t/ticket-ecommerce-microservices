@@ -10,51 +10,54 @@ import {
   Typography,
   Button,
 } from "@mui/material";
-import axios from "axios";
-import { headers } from "next/headers";
+import { Suspense } from "react";
 
 export default async function Home() {
-  const res = await axios.get(`${process.env.API_GATEWAY_URL}/api/tickets`, {
-    headers: {
-      ...Object.fromEntries(headers().entries()),
-    },
+  const res = await fetch(`http://ticketing-tickets-srv:3000/api/tickets`, {
+    cache: 'no-store',
   });
-  const tickets = res.data;
+  
+  if (!res.ok) {
+    throw new Error('Failed to fetch tickets');
+  }
 
+  const tickets = await res.json();
   return (
     <>
-      <Typography variant="h4" gutterBottom>
-        Tickets
-      </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Link</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              tickets.map((ticket: any) => (
-                <TableRow key={ticket.id}>
-                  <TableCell>{ticket.title}</TableCell>
-                  <TableCell>{ticket.price}</TableCell>
-                  <TableCell>
-                    <Link href={`/tickets/${ticket.id}`} passHref>
-                      <Button variant="contained" color="primary">
-                        View
-                      </Button>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))
-            }
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Suspense fallback={<div>Loading tickets...</div>}>
+        <Typography variant="h4" gutterBottom>
+          Tickets
+        </Typography>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Title</TableCell>
+                <TableCell>Price</TableCell>
+                <TableCell>Link</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                tickets.map((ticket: any) => (
+                  <TableRow key={ticket.id}>
+                    <TableCell>{ticket.title}</TableCell>
+                    <TableCell>{ticket.price}</TableCell>
+                    <TableCell>
+                      <Link href={`/tickets/${ticket.id}`} passHref>
+                        <Button variant="contained" color="primary">
+                          View
+                        </Button>
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))
+              }
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Suspense>
     </>
   );
 }

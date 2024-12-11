@@ -20,7 +20,10 @@ export default function PaymentForm({ order }: { order: IOrder }) {
     body: {
       orderId: order.id,
     },
-    onSuccess: () => router.push("/orders"),
+    onSuccess: () => {
+      router.push("/orders");
+      router.refresh();
+    },
   });
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {

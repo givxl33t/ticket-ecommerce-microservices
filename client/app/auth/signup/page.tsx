@@ -4,11 +4,13 @@ import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import useRequest from "@/hooks/useRequest";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/providers/auth";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { refreshUser } = useAuth();
   const { doRequest, errors } = useRequest({
     url: "/api/users/signup",
     method: "post",
@@ -16,7 +18,10 @@ export default function SignUp() {
       email,
       password,
     },
-    onSuccess: () => router.push("/"),
+    onSuccess: () => {
+      refreshUser();
+      router.push("/");
+    }
   });
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
