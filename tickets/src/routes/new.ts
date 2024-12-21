@@ -12,7 +12,8 @@ router.post(
   requireAuth, 
   [
     body('title').not().isEmpty().withMessage('Title is required'),
-    body('price').isFloat({ gt: 0 }).withMessage('Price must be greater than 0')
+    body('price').isFloat({ gt: 0 }).withMessage('Price must be greater than 0'),
+    body('price').isFloat({ lt: 999999 }).withMessage('Price exceeds maximum limit.')
   ],
   validateRequest, 
   async (req: Request, res: Response) => {

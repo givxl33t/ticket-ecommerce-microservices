@@ -7,8 +7,6 @@ manifests:
 build:
   local:
     push: false
-  # googleCloudBuild:
-  #   projectId: ticketing-dev-397517 
   artifacts:
     - image: romenzonez/ticketing-auth
       context: auth
@@ -22,9 +20,12 @@ build:
       context: client
       docker:
         dockerfile: Dockerfile
+        target: development-build-stage
       sync:
         manual:
-          - src: '**/*.js'
+          - src: '**/*.ts'
+            dest: .
+          - src: '**/*.tsx'
             dest: .
     - image: romenzonez/ticketing-tickets
       context: tickets
