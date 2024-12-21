@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          path: auth
+          sparse-checkout: auth
 
       - name: Cache
         uses: actions/cache@v4
