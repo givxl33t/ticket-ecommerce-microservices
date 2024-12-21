@@ -39,11 +39,9 @@ jobs:
       - name: Run tests
         run: cd auth && bun run test
         env:
-          DB_NAME: starterDB
-          DB_PASSWORD: secret
-          DB_USERNAME: root
-          DB_PORT: 27017
-          DB_HOST: localhost
+          MONGO_URI: mongodb://root:secret@localhost:27017/starterDB
+          APP_PORT: 3000
           TEST_APP_HOST: 127.0.0.1
-          TEST_APP_PORT: 8001
-          JWT_SECRET: secret
+          TEST_APP_PORT: 3001
+          JWT_KEY: secret
+          JWT_EXPIRES_IN: 1d
