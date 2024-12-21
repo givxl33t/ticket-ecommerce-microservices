@@ -23,6 +23,8 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: JWT_KEY
+            - name: JWT_EXPIRES_IN
+              value: '1d'
 ---
 apiVersion: v1
 kind: Service

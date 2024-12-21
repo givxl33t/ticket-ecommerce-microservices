@@ -15,6 +15,8 @@ interface IUseRequestProps {
 const useRequest = ({ url, method, body, onSuccess }: IUseRequestProps) => {
   const [errors, setErrors] = useState<ReactElement | null>(null);
 
+  console.log("errors: ", errors)
+
   const doRequest = async (props = {}) => {
     try {
       let response;

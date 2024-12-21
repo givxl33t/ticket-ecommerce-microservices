@@ -1,44 +1,45 @@
 {
   "name": "auth",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.50",
   "scripts": {
-    "start": "ts-node-dev --poll src/index.ts",
-    "test": "jest --watchAll --no-cache",
-    "test:ci": "jest"
+    "test": "NODE_ENV=test bun test ./test/**/*.test.ts",
+    "build": "bun build --compile --minify-whitespace --minify-syntax --target bun --outfile server ./src/server.ts",
+    "start": "NODE_ENV=production ./server",
+    "dev": "NODE_ENV=development bun run --watch src/server.ts",
+    "format": "prettier --write \"**/*.{ts,js}\"",
+    "lint": "eslint src test",
+    "lint:fix": "eslint src test --fix"
   },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "setupFilesAfterEnv": [
-      "./src/test/setup.ts"
-    ]
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@romen-tix-micro/common": "^1.0.5",
-    "@types/cookie-session": "^2.0.45",
-    "@types/express": "^4.17.17",
-    "@types/jsonwebtoken": "^9.0.3",
-    "@types/mongoose": "^5.11.97",
-    "cookie-session": "^2.0.0",
-    "express": "^4.18.2",
-    "express-async-errors": "^3.1.1",
-    "express-validator": "^7.0.1",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^7.5.1",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.2.2"
+    "@elysiajs/cors": "^1.1.1",
+    "@elysiajs/jwt": "^1.1.1",
+    "@elysiajs/swagger": "^1.1.6",
+    "elysia": "latest",
+    "http-status-codes": "^2.3.0",
+    "mongoose": "^8.8.4",
+    "mongoose-paginate-v2": "^1.8.5",
+    "yoctocolors": "^2.1.1"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.5",
-    "@types/supertest": "^2.0.12",
-    "jest": "^29.7.0",
-    "mongodb-memory-server": "^8.15.1",
-    "supertest": "^6.3.3",
-    "ts-jest": "^29.1.1"
-  }
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.16.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "bun-types": "latest",
+    "eslint": "^9.16.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-sonarjs": "^3.0.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.11",
+    "prettier": "^3.4.2"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  },
+  "module": "src/index.js"
 }

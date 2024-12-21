@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  ticketing_auth:
+    container_name: 'ticketing_auth'
+    image: "romenzonez/ticketing-auth:latest"
+    env_file: 
+      - .env.docker
+    depends_on:
+      elysia_bun_mongo:
+        condition: service_healthy
+    ports:
+      - 8000:8000
+
+  elysia_bun_mongo:
+    container_name: 'elysia_bun_mongo'
+    image: "mongo"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: starterDB
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    healthcheck:
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

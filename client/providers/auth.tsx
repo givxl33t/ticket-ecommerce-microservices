@@ -17,8 +17,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const refreshUser = async () => {
     try {
       const response = await axios.get("/api/users/currentuser");
-      const data = response.data;
-      setCurrentUser(data.currentUser);
+
+      const data = response.data.data;
+      setCurrentUser(data);
     } catch (error) {
       console.error(error);
     }
