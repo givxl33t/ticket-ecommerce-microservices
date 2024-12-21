@@ -12,9 +12,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
-      - name: Change directory
-        run: cd auth
-
       - name: Cache
         uses: actions/cache@v4
         with:
@@ -34,13 +31,13 @@ jobs:
           mongodb-db: starterDB
 
       - name: Installing dependencies
-        run: bun install
+        run: cd auth && bun install
 
       - name: Run linter
-        run: bun run lint
+        run: cd auth && bun run lint
 
       - name: Run tests
-        run: bun run test
+        run: cd auth && bun run test
         env:
           DB_NAME: starterDB
           DB_PASSWORD: secret
