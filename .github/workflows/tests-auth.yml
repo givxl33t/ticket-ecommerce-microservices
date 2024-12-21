@@ -3,11 +3,44 @@ name: tests-auth
 on:
   pull_request:
     paths:
-      - 'auth/**'
+      - "auth/**"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - run: cd auth && npm install && npm run test:ci
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
+        with:
+          mongodb-username: root
+          mongodb-password: secret
+          mongodb-db: starterDB
+
+      - name: Installing dependencies
+        run: cd auth && bun install
+
+      - name: Run linter
+        run: cd auth && bun run lint
+
+      - name: Run tests
+        run: cd auth && bun run test
+        env:
+          MONGO_URI: mongodb://root:secret@localhost:27017/starterDB?authSource=admin
+          TEST_APP_HOST: 127.0.0.1
+          TEST_APP_PORT: 3001
+          JWT_KEY: secret
+          JWT_EXPIRES_IN: 1d
