@@ -11,8 +11,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: auth
+      
+      - name: Change directory
+        run: cd auth
 
       - name: Cache
         uses: actions/cache@v4
