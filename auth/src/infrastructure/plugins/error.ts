@@ -32,8 +32,16 @@ export default (app: Elysia) =>
     // overwrite 422 default code for validation
     if (handler.code === "VALIDATION") {
       handler.set.status = StatusCodes.BAD_REQUEST;
+
       return {
-        message: JSON.parse(handler.error.message),
+        // use handler.error.all or a generic error message for production
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        message: handler.error.all.map((err: any) => {
+          return {
+            field: err.path.slice(1),
+            message: err.summary,
+          };
+        }),
         code: handler.set.status,
       };
     }

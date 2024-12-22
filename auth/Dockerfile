@@ -1,4 +1,4 @@
-FROM oven/bun:latest AS build
+FROM oven/bun:latest AS common-build-stage
 
 WORKDIR /app
 
@@ -10,6 +10,14 @@ RUN bun install
 
 COPY . ./
 
+FROM common-build-stage AS development-build-stage
+
+ENV NODE_ENV=development
+
+CMD ["bun", "run", "dev"]
+
+FROM common-build-stage AS production-build-stage
+
 ENV NODE_ENV=production
 
 RUN bun build \
@@ -20,11 +28,11 @@ RUN bun build \
 	--outfile server \
 	./src/server.ts
 
-FROM gcr.io/distroless/base
+FROM gcr.io/distroless/base AS production-runtime-stage
 
 WORKDIR /app
 
-COPY --from=build /app/server server
+COPY --from=production-build-stage /app/server server
 
 ENV NODE_ENV=production
 

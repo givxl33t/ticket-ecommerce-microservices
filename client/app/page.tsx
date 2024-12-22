@@ -13,6 +13,7 @@ import {
 import { Suspense } from "react";
 
 export default async function Home() {
+  // note, for server side rendering, we need to use fetch instead of axios
   const res = await fetch(`http://ticketing-tickets-srv:3000/api/tickets`, {
     cache: 'no-store',
   });
