@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tickets-mongo-depl
+  name: tickets-mysql-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tickets-mongo
+      app: tickets-mysql
   template:
     metadata:
       labels:
-        app: tickets-mongo
+        app: tickets-mysql
     spec:
       containers:
-        - name: tickets-mongo
-          image: mongo
+        - name: tickets-mysql
+          image: mysql
           imagePullPolicy: IfNotPresent
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: tickets-mongo-srv
+  name: tickets-mysql-srv
 spec:
   selector:
-    app: tickets-mongo
+    app: tickets-mysql
   ports:
-    - name: tickets-mongo
+    - name: tickets-mysql
       protocol: TCP
-      port: 27017
-      targetPort: 27017
+      port: 3306
+      targetPort: 3306

@@ -14,23 +14,24 @@ spec:
     spec:
       containers:
         - name: nats
-          image: nats-streaming:0.17.0
+          image: nats:latest
           imagePullPolicy: IfNotPresent
           args: [
-            "-p",
-            "4222",
-            "-m",
-            "8222",
-            "-hbi",
-            "5s",
-            "-hbt",
-            "5s",
-            "-hbf",
-            "2",
-            "-SD",
-            "-cid",
-            "ticketing",
+            "-js",
+            "--jetstream-store", "file",
+            "--jetstream-dir", "/data",
+            "-p", "4222",
+            "-m", "8222"
           ]
+          ports:
+            - containerPort: 4222 # NATS client port
+            - containerPort: 8222 # NATS monitoring port
+          volumeMounts:
+            - name: nats-data
+              mountPath: /data
+      volumes:
+        - name: nats-data
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
