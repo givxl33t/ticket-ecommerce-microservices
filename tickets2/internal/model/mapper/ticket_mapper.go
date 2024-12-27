@@ -6,11 +6,11 @@ import (
 )
 
 func ToTicketResponse(ticket *domain.Ticket) *model.TicketResponse {
-	var orderID *string
+	var orderID *int32
 
-	// check whether the sql.NullString is valid
+	// check whether the sql.NullInt32 is valid
 	if ticket.OrderID.Valid {
-		orderID = &ticket.OrderID.String
+		orderID = &ticket.OrderID.Int32
 	} else {
 		orderID = nil
 	}

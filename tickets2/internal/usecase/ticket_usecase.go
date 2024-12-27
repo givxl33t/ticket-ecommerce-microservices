@@ -17,9 +17,10 @@ import (
 
 type TicketUsecase interface {
 	Create(ctx context.Context, request *model.CreateTicketRequest) (*model.TicketResponse, error)
-	Update(ctx context.Context, request *model.UpdateTicketRequest) (*model.TicketResponse, error)
+	UpdateData(ctx context.Context, request *model.UpdateTicketRequest) (*model.TicketResponse, error)
+	UpdateOrder(ctx context.Context, request *model.UpdateTicketOrderRequest) (*model.TicketResponse, error)
 	FindAll(ctx context.Context) ([]model.TicketResponse, error)
-	FindById(ctx context.Context, id uint) (*model.TicketResponse, error)
+	FindById(ctx context.Context, id int32) (*model.TicketResponse, error)
 }
 
 type TicketUsecaseImpl struct {
@@ -49,7 +50,7 @@ func (uc *TicketUsecaseImpl) Create(ctx context.Context, request *model.CreateTi
 	ticket.Title = request.Title
 	ticket.Price = request.Price
 	ticket.UserID = request.UserID
-	ticket.OrderID = sql.NullString{String: "", Valid: false}
+	ticket.OrderID = sql.NullInt32{Valid: false}
 
 	if err := uc.TicketRepository.Create(ctx, ticket); err != nil {
 		uc.Logger.WithError(err).Error("failed create ticket to database")
@@ -59,7 +60,7 @@ func (uc *TicketUsecaseImpl) Create(ctx context.Context, request *model.CreateTi
 	return mapper.ToTicketResponse(ticket), nil
 }
 
-func (uc *TicketUsecaseImpl) Update(ctx context.Context, request *model.UpdateTicketRequest) (*model.TicketResponse, error) {
+func (uc *TicketUsecaseImpl) UpdateData(ctx context.Context, request *model.UpdateTicketRequest) (*model.TicketResponse, error) {
 	if err := uc.Validate.Struct(request); err != nil {
 		uc.Logger.WithError(err).Error("failed validating request body")
 		return nil, err
@@ -92,6 +93,32 @@ func (uc *TicketUsecaseImpl) Update(ctx context.Context, request *model.UpdateTi
 	return mapper.ToTicketResponse(ticket), nil
 }
 
+func (uc *TicketUsecaseImpl) UpdateOrder(ctx context.Context, request *model.UpdateTicketOrderRequest) (*model.TicketResponse, error) {
+	if err := uc.Validate.Struct(request); err != nil {
+		uc.Logger.WithError(err).Error("failed validating request body")
+		return nil, err
+	}
+
+	ticket, err := uc.TicketRepository.FindById(ctx, request.ID)
+	if err != nil {
+		uc.Logger.WithError(err).Error("failed find ticket by id")
+		return nil, exception.ErrTicketNotFound
+	}
+
+	if request.OrderID == nil {
+		ticket.OrderID = sql.NullInt32{Valid: false}
+	} else {
+		ticket.OrderID = sql.NullInt32{Int32: *request.OrderID, Valid: true}
+	}
+
+	if err := uc.TicketRepository.Update(ctx, ticket); err != nil {
+		uc.Logger.WithError(err).Error("failed update ticket to database")
+		return nil, exception.ErrInternalServerError
+	}
+
+	return mapper.ToTicketResponse(ticket), nil
+}
+
 func (uc *TicketUsecaseImpl) FindAll(ctx context.Context) ([]model.TicketResponse, error) {
 	tickets, err := uc.TicketRepository.FindAll(ctx)
 	if err != nil {
@@ -107,7 +134,7 @@ func (uc *TicketUsecaseImpl) FindAll(ctx context.Context) ([]model.TicketRespons
 	return responses, nil
 }
 
-func (uc *TicketUsecaseImpl) FindById(ctx context.Context, id uint) (*model.TicketResponse, error) {
+func (uc *TicketUsecaseImpl) FindById(ctx context.Context, id int32) (*model.TicketResponse, error) {
 	ticket, err := uc.TicketRepository.FindById(ctx, id)
 	if err != nil {
 		uc.Logger.WithError(err).Error("failed find ticket by id")

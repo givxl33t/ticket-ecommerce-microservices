@@ -12,7 +12,7 @@ type TicketRepository interface {
 	Create(ctx context.Context, ticket *domain.Ticket) error
 	Update(ctx context.Context, ticket *domain.Ticket) error
 	FindAll(ctx context.Context) ([]domain.Ticket, error)
-	FindById(ctx context.Context, id uint) (*domain.Ticket, error)
+	FindById(ctx context.Context, id int32) (*domain.Ticket, error)
 }
 
 type TicketRepositoryImpl struct {
@@ -53,7 +53,7 @@ func (r *TicketRepositoryImpl) FindAll(ctx context.Context) ([]domain.Ticket, er
 	return tickets, nil
 }
 
-func (r *TicketRepositoryImpl) FindById(ctx context.Context, id uint) (*domain.Ticket, error) {
+func (r *TicketRepositoryImpl) FindById(ctx context.Context, id int32) (*domain.Ticket, error) {
 	ticket := new(domain.Ticket)
 
 	if err := r.DB.WithContext(ctx).Where("id = ?", id).Take(ticket).Error; err != nil {

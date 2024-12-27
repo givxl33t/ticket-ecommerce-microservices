@@ -14,9 +14,9 @@ type TicketHandler struct {
 	Logger        *logrus.Logger
 }
 
-func NewTicketHandler(userUsecase usecase.TicketUsecase, log *logrus.Logger) *TicketHandler {
+func NewTicketHandler(ticketUseCase usecase.TicketUsecase, log *logrus.Logger) *TicketHandler {
 	return &TicketHandler{
-		TicketUsecase: userUsecase,
+		TicketUsecase: ticketUseCase,
 		Logger:        log,
 	}
 }
@@ -82,16 +82,16 @@ func (h *TicketHandler) Create(c *fiber.Ctx) error {
 func (h *TicketHandler) GetByID(c *fiber.Ctx) error {
 	idStr := c.Params("id")
 
-	// parse id as uint
-	id, err := strconv.ParseUint(idStr, 10, 32)
+	// parse id as int32
+	id, err := strconv.ParseInt(idStr, 10, 32)
 	if err != nil {
 		h.Logger.WithError(err).Error("error parsing id")
 		return err
 	}
 
-	idUint := uint(id)
+	idint32 := int32(id)
 
-	response, err := h.TicketUsecase.FindById(c.Context(), idUint)
+	response, err := h.TicketUsecase.FindById(c.Context(), idint32)
 	if err != nil {
 		h.Logger.WithError(err).Error("error find ticket by id")
 		return err
@@ -120,17 +120,17 @@ func (h *TicketHandler) Update(c *fiber.Ctx) error {
 
 	idStr := c.Params("id")
 
-	// parse id as uint
-	id, err := strconv.ParseUint(idStr, 10, 32)
+	// parse id as int32
+	id, err := strconv.ParseInt(idStr, 10, 32)
 	if err != nil {
 		h.Logger.WithError(err).Error("error parsing id")
 		return err
 	}
 
-	idUint := uint(id)
-	updateTicketRequest.ID = idUint
+	idint32 := int32(id)
+	updateTicketRequest.ID = idint32
 
-	response, err := h.TicketUsecase.Update(c.Context(), updateTicketRequest)
+	response, err := h.TicketUsecase.UpdateData(c.Context(), updateTicketRequest)
 	if err != nil {
 		h.Logger.WithError(err).Error("error update ticket")
 		return err

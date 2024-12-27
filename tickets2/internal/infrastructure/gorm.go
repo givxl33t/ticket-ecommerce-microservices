@@ -28,7 +28,6 @@ func NewGorm(config *viper.Viper) *gorm.DB {
 		dbname,
 	)
 
-	// is mysql a good idea too?
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		SkipDefaultTransaction: true,
 	})
