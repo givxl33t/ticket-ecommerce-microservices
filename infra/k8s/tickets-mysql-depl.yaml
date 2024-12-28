@@ -14,8 +14,19 @@ spec:
     spec:
       containers:
         - name: tickets-mysql
-          image: mysql
+          image: mysql:8.0
           imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ALLOW_EMPTY_PASSWORD
+              value: '1'
+            - name: MYSQL_DATABASE
+              value: 'tickets'
+            - name: MYSQL_USER
+              value: 'testuser'
+            - name: MYSQL_PASSWORD
+              value: 'testpassword'
 ---
 apiVersion: v1
 kind: Service

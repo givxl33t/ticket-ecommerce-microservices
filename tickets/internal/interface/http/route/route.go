@@ -10,7 +10,6 @@ func RegisterRoute(app *fiber.App, ticketHandler *handler.TicketHandler, authMid
 	prefixRouter := app.Group("/api")
 	prefixRouter.Get("/tickets", ticketHandler.GetAll)
 	prefixRouter.Post("/tickets", ticketHandler.Create)
-	// temporary comment prefixRouter.Post("/tickets", authMiddleware, ticketHandler.Create)
 	prefixRouter.Get("/tickets/:id", ticketHandler.GetByID)
 	prefixRouter.Put("/tickets/:id", authMiddleware, ticketHandler.Update)
 }

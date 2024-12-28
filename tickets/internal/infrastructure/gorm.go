@@ -28,9 +28,24 @@ func NewGorm(config *viper.Viper) *gorm.DB {
 		dbname,
 	)
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		SkipDefaultTransaction: true,
-	})
+	var db *gorm.DB
+	var err error
+	maxRetries := 10
+	retryInterval := 5 * time.Second
+
+	for i := 0; i < maxRetries; i++ {
+		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+			SkipDefaultTransaction: true,
+		})
+		if err == nil {
+			fmt.Printf("Connected to MySQL database!!!\n")
+			break
+		}
+
+		fmt.Printf("Error connecting to database: %v\n", err.Error())
+		time.Sleep(retryInterval)
+	}
+
 	if err != nil {
 		panic(fmt.Errorf("error connecting database : %+v", err.Error()))
 	}

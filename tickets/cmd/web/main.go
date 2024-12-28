@@ -12,6 +12,7 @@ import (
 	"ticketing/tickets/internal/interface/http/handler"
 	"ticketing/tickets/internal/interface/http/route"
 	"ticketing/tickets/internal/interface/listener"
+	"ticketing/tickets/internal/publisher"
 	"ticketing/tickets/internal/repository"
 	"ticketing/tickets/internal/usecase"
 )
@@ -39,21 +40,22 @@ func main() {
 	logger := infrastructure.NewLogger(config)
 	validate := infrastructure.NewValidator(config)
 
-	// Repository, use case, and handler setup
-	userRepository := repository.NewTicketRepository(db)
-	TicketUsecase := usecase.NewTicketUsecase(userRepository, logger, validate, config)
-	ticketHandler := handler.NewTicketHandler(TicketUsecase, logger)
-
-	// Middleware and routes
-	authMiddleware := middleware.NewAuth(logger, config)
-	route.RegisterRoute(app, ticketHandler, authMiddleware)
-
-	// NATS connection
+	// NATS singleton connection
 	natsConn, err := infrastructure.NewNATS(config)
 	if err != nil {
 		panic(fmt.Errorf("failed to connect to NATS: %v", err))
 	}
 	defer infrastructure.CloseNATS()
+
+	// Repository, use case, and handler setup
+	ticketRepository := repository.NewTicketRepository(db)
+	ticketPublisher := publisher.NewTicketPublisher(natsConn)
+	TicketUsecase := usecase.NewTicketUsecase(ticketRepository, ticketPublisher, logger, validate, config)
+	ticketHandler := handler.NewTicketHandler(TicketUsecase, logger)
+
+	//
+	authMiddleware := middleware.NewAuth(logger, config)
+	route.RegisterRoute(app, ticketHandler, authMiddleware)
 
 	// Listeners
 	orderListener := listener.NewOrderListener(TicketUsecase, natsConn, logger)

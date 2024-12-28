@@ -10,4 +10,5 @@ var (
 
 	// generic error
 	ErrInternalServerError = fiber.ErrInternalServerError
+	ErrMessageNotPublished = fiber.NewError(fiber.StatusBadRequest, "message not published")
 )

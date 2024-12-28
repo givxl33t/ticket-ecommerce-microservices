@@ -17,10 +17,7 @@ spec:
           image: romenzonez/ticketing-client
           env:
             - name: API_GATEWAY_URL
-              valueFrom:
-                secretKeyRef:
-                  name: api-gateway-url 
-                  key: API_GATEWAY_URL
+              value: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local
 ---
 apiVersion: v1
 kind: Service

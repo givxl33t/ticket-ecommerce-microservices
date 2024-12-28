@@ -4,6 +4,7 @@ metadata:
   name: nats-depl
 spec:
   replicas: 1
+  strategy: {}
   selector:
     matchLabels:
       app: nats
@@ -14,15 +15,7 @@ spec:
     spec:
       containers:
         - name: nats
-          image: nats:latest
-          imagePullPolicy: IfNotPresent
-          args: [
-            "-js",
-            "--jetstream-store", "file",
-            "--jetstream-dir", "/data",
-            "-p", "4222",
-            "-m", "8222"
-          ]
+          image: nats:2.7.0-alpine
           ports:
             - containerPort: 4222 # NATS client port
             - containerPort: 8222 # NATS monitoring port

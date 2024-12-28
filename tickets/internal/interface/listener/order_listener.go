@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"ticketing/tickets/internal/domain"
-	"ticketing/tickets/internal/infrastructure/event"
+	"ticketing/tickets/internal/infrastructure"
 	"ticketing/tickets/internal/model"
 	"ticketing/tickets/internal/usecase"
 	"time"
@@ -83,14 +83,14 @@ func (ol *OrderListener) HandleOrderCancelled(data []byte) error {
 }
 
 func (ol *OrderListener) Listen() {
-	orderCreatedListener := &event.Listener{
+	orderCreatedListener := &infrastructure.Listener{
 		Subject:       domain.OrderCreated,
 		QueueGroup:    QueueGroupName,
 		NatsConn:      ol.NatsConn,
 		OnMessageFunc: ol.HandleOrderCreated,
 	}
 
-	orderCancelledListener := &event.Listener{
+	orderCancelledListener := &infrastructure.Listener{
 		Subject:       domain.OrderCancelled,
 		QueueGroup:    QueueGroupName,
 		NatsConn:      ol.NatsConn,

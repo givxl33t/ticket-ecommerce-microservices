@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"strconv"
 	"ticketing/tickets/internal/model"
 	"ticketing/tickets/internal/usecase"
@@ -63,6 +64,7 @@ func (h *TicketHandler) Create(c *fiber.Ctx) error {
 	response, err := h.TicketUsecase.Create(c.Context(), createTicketRequest)
 	if err != nil {
 		h.Logger.WithError(err).Error("error create ticket")
+		log.Printf("Error processing message: %v\n", err)
 		return err
 	}
 

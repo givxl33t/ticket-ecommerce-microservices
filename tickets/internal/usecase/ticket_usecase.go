@@ -3,13 +3,13 @@ package usecase
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
+	"log"
 
 	"ticketing/tickets/internal/common/exception"
 	"ticketing/tickets/internal/domain"
-	"ticketing/tickets/internal/infrastructure/event"
 	"ticketing/tickets/internal/model"
 	"ticketing/tickets/internal/model/mapper"
+	"ticketing/tickets/internal/publisher"
 	"ticketing/tickets/internal/repository"
 
 	"github.com/go-playground/validator/v10"
@@ -26,16 +26,17 @@ type TicketUsecase interface {
 
 type TicketUsecaseImpl struct {
 	TicketRepository repository.TicketRepository
-	EventPublisher   *event.Publisher
+	TicketPublisher  publisher.TicketPublisher
 	Logger           *logrus.Logger
 	Validate         *validator.Validate
 	Config           *viper.Viper
 }
 
-func NewTicketUsecase(ticketRepo repository.TicketRepository, log *logrus.Logger,
+func NewTicketUsecase(ticketRepo repository.TicketRepository, ticketPublisher publisher.TicketPublisher, log *logrus.Logger,
 	validate *validator.Validate, config *viper.Viper) TicketUsecase {
 	return &TicketUsecaseImpl{
 		TicketRepository: ticketRepo,
+		TicketPublisher:  ticketPublisher,
 		Logger:           log,
 		Validate:         validate,
 		Config:           config,
@@ -56,26 +57,13 @@ func (uc *TicketUsecaseImpl) Create(ctx context.Context, request *model.CreateTi
 
 	if err := uc.TicketRepository.Create(ctx, ticket); err != nil {
 		uc.Logger.WithError(err).Error("failed create ticket to database")
+		log.Printf("Error processing message: %v\n", err)
 		return nil, exception.ErrInternalServerError
 	}
 
-	// handling event logic
-	event := model.TicketCreatedEvent{
-		ID:      ticket.ID,
-		Title:   ticket.Title,
-		Price:   ticket.Price,
-		UserID:  ticket.UserID,
-		OrderID: nil,
-	}
-
-	data, err := json.Marshal(event)
-	if err != nil {
-		uc.Logger.WithError(err).Error("failed marshal event")
-		return nil, exception.ErrInternalServerError
-	}
-
-	if err := uc.EventPublisher.Publish(domain.TicketCreated, data); err != nil {
+	if err := uc.TicketPublisher.Created(ticket); err != nil {
 		uc.Logger.WithError(err).Error("failed publish event TicketCreated event")
+		return nil, exception.ErrMessageNotPublished
 	}
 
 	return mapper.ToTicketResponse(ticket), nil
@@ -89,12 +77,12 @@ func (uc *TicketUsecaseImpl) Update(ctx context.Context, request *model.UpdateTi
 
 	ticket, err := uc.TicketRepository.FindById(ctx, request.ID)
 	if err != nil {
-		uc.Logger.WithError(err).Error("failed find ticket by id")
+		uc.Logger.WithError(err).Error("ticket not found")
 		return nil, exception.ErrTicketNotFound
 	}
 
 	if ticket.OrderID.Valid {
-		uc.Logger.WithError(err).Error("failed find ticket by id")
+		uc.Logger.WithError(err).Error("ticket already ordered")
 		return nil, exception.ErrTicketAlreadyOrdered
 	}
 
@@ -116,22 +104,7 @@ func (uc *TicketUsecaseImpl) Update(ctx context.Context, request *model.UpdateTi
 		return nil, exception.ErrInternalServerError
 	}
 
-	// handling event logic
-	event := model.TicketUpdatedEvent{
-		ID:      ticket.ID,
-		Title:   ticket.Title,
-		Price:   ticket.Price,
-		UserID:  ticket.UserID,
-		OrderID: ticket.OrderID,
-	}
-
-	data, err := json.Marshal(event)
-	if err != nil {
-		uc.Logger.WithError(err).Error("failed marshal event")
-		return nil, exception.ErrInternalServerError
-	}
-
-	if err := uc.EventPublisher.Publish(domain.TicketUpdated, data); err != nil {
+	if err := uc.TicketPublisher.Updated(ticket); err != nil {
 		uc.Logger.WithError(err).Error("failed publish event TicketUpdated event")
 	}
 

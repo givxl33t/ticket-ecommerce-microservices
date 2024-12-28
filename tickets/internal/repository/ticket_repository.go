@@ -45,7 +45,6 @@ func (r *TicketRepositoryImpl) Update(ctx context.Context, ticket *domain.Ticket
 
 func (r *TicketRepositoryImpl) FindAll(ctx context.Context) ([]domain.Ticket, error) {
 	var tickets []domain.Ticket
-
 	if err := r.DB.WithContext(ctx).Where("order_id is NULL").Find(&tickets).Error; err != nil {
 		return nil, err
 	}
