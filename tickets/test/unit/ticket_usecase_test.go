@@ -27,10 +27,12 @@ func TestCreateTicket(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		ticketRepository.EXPECT().Create(ctx, gomock.Any()).Return(nil)
+		ticketPublisher.EXPECT().Created(gomock.Any()).Return(nil)
 
 		request := &model.CreateTicketRequest{
-			Title: "concert",
-			Price: 2000,
+			Title:  "concert",
+			Price:  2000,
+			UserID: "user-1",
 		}
 
 		response, err := ticketUsecase.Create(ctx, request)

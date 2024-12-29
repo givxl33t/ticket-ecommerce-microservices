@@ -23,7 +23,6 @@ func (s *e2eTestSuite) TestTicketCreatedSuccess() {
 
 	request := httptest.NewRequest(http.MethodPost, "/api/tickets", strings.NewReader(string(bodyJSON)))
 	request.Header.Add("content-type", "application/json")
-
 	// fake user
 	cookie := &http.Cookie{
 		Name:  "session",
@@ -32,6 +31,7 @@ func (s *e2eTestSuite) TestTicketCreatedSuccess() {
 	request.AddCookie(cookie)
 
 	response, err := s.App.Test(request)
+
 	s.Assert().NoError(err)
 	s.Assert().Equal(http.StatusCreated, response.StatusCode)
 
@@ -56,6 +56,12 @@ func (s *e2eTestSuite) TestTicketCreatedFailedValidation() {
 
 	request := httptest.NewRequest(http.MethodPost, "/api/tickets", strings.NewReader(string(bodyJSON)))
 	request.Header.Add("content-type", "application/json")
+	// fake user
+	cookie := &http.Cookie{
+		Name:  "session",
+		Value: s.GenerateUserToken(),
+	}
+	request.AddCookie(cookie)
 
 	response, err := s.App.Test(request)
 	s.Assert().NoError(err)

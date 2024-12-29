@@ -15,6 +15,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
@@ -26,6 +27,7 @@ type e2eTestSuite struct {
 	Config           *viper.Viper
 	App              *fiber.App
 	DB               *gorm.DB
+	NATS             *nats.Conn
 	Log              *logrus.Logger
 	Validate         *validator.Validate
 	TicketRepository repository.TicketRepository
@@ -42,10 +44,12 @@ func TestE2eSuite(t *testing.T) {
 func (s *e2eTestSuite) SetupSuite() {
 	s.Config = config.New()
 	s.DB = infrastructure.NewGorm(s.Config)
+	s.NATS = infrastructure.NewNATS(s.Config)
 	s.Log = infrastructure.NewLogger(s.Config)
 	s.App = infrastructure.NewFiber(s.Config)
 	s.Validate = infrastructure.NewValidator(s.Config)
 	s.TicketRepository = repository.NewTicketRepository(s.DB)
+	s.TicketPublisher = publisher.NewTicketPublisher(s.NATS)
 	s.TicketUsecase = usecase.NewTicketUsecase(s.TicketRepository, s.TicketPublisher, s.Log, s.Validate, s.Config)
 	s.TicketHandler = handler.NewTicketHandler(s.TicketUsecase, s.Log)
 	s.AuthMiddleware = middleware.NewAuth(s.Log, s.Config)
@@ -57,5 +61,5 @@ func (s *e2eTestSuite) SetupTest() {
 }
 
 func (s *e2eTestSuite) TearDownTest() {
-	s.Require().NoError(s.DB.Migrator().DropTable("users"))
+	s.Require().NoError(s.DB.Migrator().DropTable("tickets"))
 }

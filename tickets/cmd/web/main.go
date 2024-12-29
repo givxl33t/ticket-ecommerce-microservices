@@ -37,14 +37,11 @@ func main() {
 	app := infrastructure.NewFiber(config)
 	port := config.Get("APP_PORT")
 	db := infrastructure.NewGorm(config)
+	natsConn := infrastructure.NewNATS(config)
 	logger := infrastructure.NewLogger(config)
 	validate := infrastructure.NewValidator(config)
 
-	// NATS singleton connection
-	natsConn, err := infrastructure.NewNATS(config)
-	if err != nil {
-		panic(fmt.Errorf("failed to connect to NATS: %v", err))
-	}
+	// Close NATS singleton connection
 	defer infrastructure.CloseNATS()
 
 	// Repository, use case, and handler setup

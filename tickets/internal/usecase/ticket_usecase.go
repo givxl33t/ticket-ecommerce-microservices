@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	"ticketing/tickets/internal/common/exception"
 	"ticketing/tickets/internal/domain"
@@ -57,7 +56,6 @@ func (uc *TicketUsecaseImpl) Create(ctx context.Context, request *model.CreateTi
 
 	if err := uc.TicketRepository.Create(ctx, ticket); err != nil {
 		uc.Logger.WithError(err).Error("failed create ticket to database")
-		log.Printf("Error processing message: %v\n", err)
 		return nil, exception.ErrInternalServerError
 	}
 

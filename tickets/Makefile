@@ -7,12 +7,13 @@ ENV_LOCAL_TEST=\
 				DB_PASSWORD= \
 				DB_HOST=localhost \
 				DB_PORT=3306 \
-				DB_NAME=Tickets \
+				DB_NAME=tickets_service \
 				POOL_IDLE=5 \
 				POOL_MAX=100 \
 				POOL_LIFETIME=3000 \
 				LOG_LEVEL=6 \
-				JWT_SECRET_KEY=secretkey
+				JWT_SECRET_KEY=secretkey \
+				NATS_URL=http://localhost:4222
 
 build:
 				go build -o fiber-app ./cmd/web
