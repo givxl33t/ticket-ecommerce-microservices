@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// make it a singleton instance okok
 var (
 	natsInstance *nats.Conn
 	once         sync.Once

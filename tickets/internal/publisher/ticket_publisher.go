@@ -43,7 +43,7 @@ func (p *TicketPublisherImpl) Created(ticket *domain.Ticket) error {
 		return err
 	}
 
-	log.Printf("Published TicketCreatedEvent: %v\n", message)
+	log.Printf("Published event on subject: %s", domain.TicketCreated)
 
 	return nil
 }
@@ -67,7 +67,6 @@ func (p *TicketPublisherImpl) Updated(ticket *domain.Ticket) error {
 		return err
 	}
 
-	log.Printf("Published TicketUpdatedEvent: %v\n", message)
-
+	log.Printf("Published event on subject: %s", domain.TicketUpdated)
 	return nil
 }

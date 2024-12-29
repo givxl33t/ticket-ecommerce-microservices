@@ -53,7 +53,7 @@ func main() {
 	TicketUsecase := usecase.NewTicketUsecase(ticketRepository, ticketPublisher, logger, validate, config)
 	ticketHandler := handler.NewTicketHandler(TicketUsecase, logger)
 
-	//
+	// HTTP routes
 	authMiddleware := middleware.NewAuth(logger, config)
 	route.RegisterRoute(app, ticketHandler, authMiddleware)
 

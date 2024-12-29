@@ -8,7 +8,6 @@ import (
 func ToTicketResponse(ticket *domain.Ticket) *model.TicketResponse {
 	var orderID *int32
 
-	// check whether the sql.NullInt32 is valid
 	if ticket.OrderID.Valid {
 		orderID = &ticket.OrderID.Int32
 	} else {

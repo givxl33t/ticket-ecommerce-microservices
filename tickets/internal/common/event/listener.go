@@ -1,4 +1,4 @@
-package infrastructure
+package event
 
 import (
 	"log"

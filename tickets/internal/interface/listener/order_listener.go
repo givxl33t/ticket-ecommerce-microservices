@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"ticketing/tickets/internal/common/event"
 	"ticketing/tickets/internal/domain"
-	"ticketing/tickets/internal/infrastructure"
 	"ticketing/tickets/internal/model"
 	"ticketing/tickets/internal/usecase"
 	"time"
@@ -48,7 +48,6 @@ func (ol *OrderListener) HandleOrderCreated(data []byte) error {
 	updateTicketOrderRequest.OrderID = event.ID
 	updateTicketOrderRequest.ID = event.Ticket.ID
 
-	// Save process to database
 	if _, err := ol.TicketUsecase.Update(ctx, updateTicketOrderRequest); err != nil {
 		ol.Logger.WithError(err).Error("failed to update ticket order")
 		return err
@@ -73,7 +72,6 @@ func (ol *OrderListener) HandleOrderCancelled(data []byte) error {
 	updateTicketOrderRequest.OrderID = event.ID
 	updateTicketOrderRequest.ID = event.Ticket.ID
 
-	// Save process to database
 	if _, err := ol.TicketUsecase.Update(ctx, updateTicketOrderRequest); err != nil {
 		ol.Logger.WithError(err).Error("failed to update ticket order")
 		return err
@@ -83,14 +81,14 @@ func (ol *OrderListener) HandleOrderCancelled(data []byte) error {
 }
 
 func (ol *OrderListener) Listen() {
-	orderCreatedListener := &infrastructure.Listener{
+	orderCreatedListener := &event.Listener{
 		Subject:       domain.OrderCreated,
 		QueueGroup:    QueueGroupName,
 		NatsConn:      ol.NatsConn,
 		OnMessageFunc: ol.HandleOrderCreated,
 	}
 
-	orderCancelledListener := &infrastructure.Listener{
+	orderCancelledListener := &event.Listener{
 		Subject:       domain.OrderCancelled,
 		QueueGroup:    QueueGroupName,
 		NatsConn:      ol.NatsConn,
