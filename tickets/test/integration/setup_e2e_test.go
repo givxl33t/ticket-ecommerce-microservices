@@ -9,6 +9,7 @@ import (
 	"ticketing/tickets/internal/infrastructure/middleware"
 	"ticketing/tickets/internal/interface/http/handler"
 	"ticketing/tickets/internal/interface/http/route"
+	"ticketing/tickets/internal/publisher"
 	"ticketing/tickets/internal/repository"
 	"ticketing/tickets/internal/usecase"
 
@@ -22,15 +23,16 @@ import (
 
 type e2eTestSuite struct {
 	suite.Suite
-	Config         *viper.Viper
-	App            *fiber.App
-	DB             *gorm.DB
-	Log            *logrus.Logger
-	Validate       *validator.Validate
-	UserRepository repository.UserRepository
-	UserUsecase    usecase.UserUsecase
-	UserHandler    *handler.UserHandler
-	AuthMiddleware fiber.Handler
+	Config           *viper.Viper
+	App              *fiber.App
+	DB               *gorm.DB
+	Log              *logrus.Logger
+	Validate         *validator.Validate
+	TicketRepository repository.TicketRepository
+	TicketPublisher  publisher.TicketPublisher
+	TicketUsecase    usecase.TicketUsecase
+	TicketHandler    *handler.TicketHandler
+	AuthMiddleware   fiber.Handler
 }
 
 func TestE2eSuite(t *testing.T) {
@@ -43,15 +45,15 @@ func (s *e2eTestSuite) SetupSuite() {
 	s.Log = infrastructure.NewLogger(s.Config)
 	s.App = infrastructure.NewFiber(s.Config)
 	s.Validate = infrastructure.NewValidator(s.Config)
-	s.UserRepository = repository.NewUserRepository(s.DB)
-	s.UserUsecase = usecase.NewUserUsecase(s.UserRepository, s.Log, s.Validate, s.Config)
-	s.UserHandler = handler.NewUserHandler(s.UserUsecase, s.Log)
-	s.AuthMiddleware = middleware.NewAuth(s.UserUsecase, s.Log)
-	route.RegisterRoute(s.App, s.UserHandler, s.AuthMiddleware)
+	s.TicketRepository = repository.NewTicketRepository(s.DB)
+	s.TicketUsecase = usecase.NewTicketUsecase(s.TicketRepository, s.TicketPublisher, s.Log, s.Validate, s.Config)
+	s.TicketHandler = handler.NewTicketHandler(s.TicketUsecase, s.Log)
+	s.AuthMiddleware = middleware.NewAuth(s.Log, s.Config)
+	route.RegisterRoute(s.App, s.TicketHandler, s.AuthMiddleware)
 }
 
 func (s *e2eTestSuite) SetupTest() {
-	s.Require().NoError(s.DB.Migrator().AutoMigrate(&domain.User{}))
+	s.Require().NoError(s.DB.Migrator().AutoMigrate(&domain.Ticket{}))
 }
 
 func (s *e2eTestSuite) TearDownTest() {

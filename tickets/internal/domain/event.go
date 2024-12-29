@@ -1,15 +1,10 @@
 package domain
 
 const (
-	// Ticket-related events
-	TicketCreated = "ticket:created"
-	TicketUpdated = "ticket:updated"
-
-	// Order-related events
-	OrderCreated   = "order:created"
-	OrderCancelled = "order:cancelled"
-
-	// System-related events
+	TicketCreated      = "ticket:created"
+	TicketUpdated      = "ticket:updated"
+	OrderCreated       = "order:created"
+	OrderCancelled     = "order:cancelled"
 	ExpirationComplete = "expiration:complete"
 	PaymentCreated     = "payment:created"
 )

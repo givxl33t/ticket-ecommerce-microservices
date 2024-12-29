@@ -51,10 +51,10 @@ func (h *TicketHandler) GetAll(c *fiber.Ctx) error {
 // @Success 201 {object} model.TicketResponse
 // @Router /tickets [post]
 func (h *TicketHandler) Create(c *fiber.Ctx) error {
-	// auth := c.Locals("auth").(*model.AccessTokenPayload)
+	auth := c.Locals("auth").(*model.AccessTokenPayload)
 	createTicketRequest := new(model.CreateTicketRequest)
 
-	createTicketRequest.UserID = "anything"
+	createTicketRequest.UserID = auth.ID
 
 	if err := c.BodyParser(createTicketRequest); err != nil {
 		h.Logger.WithError(err).Error("error parsing request body")

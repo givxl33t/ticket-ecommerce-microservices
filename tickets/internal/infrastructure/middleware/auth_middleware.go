@@ -13,6 +13,7 @@ import (
 func NewAuth(logger *logrus.Logger, config *viper.Viper) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		accessToken := c.Cookies("session")
+
 		if accessToken == "" {
 			return exception.ErrUserUnauthorized
 		}
