@@ -1,0 +1,60 @@
+version: '3.9'
+
+services:
+  ticketing_tickets:
+    container_name: ticketing_tickets
+    image: romenzonez/ticketing-tickets:latest
+    restart: always
+    ports:
+      - 3001:3000
+    depends_on:
+      tickets_mysql:
+        condition: service_healthy
+      tickets_nats_server:
+        condition: service_healthy
+    env_file:
+      - .env.docker
+
+  tickets_mysql:
+    container_name: tickets_mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_DATABASE: tickets
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testpassword
+    ports:
+      - 3307:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  tickets_nats_server:
+    container_name: tickets_nats_server
+    image: nats:latest
+    ports:
+      - 4222:4222
+    healthcheck:
+      test: ["CMD", "nats-server", "--version"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  ticketing_tickets_migration:
+    container_name: ticketing_tickets_migration
+    image: migrate/migrate
+    depends_on:
+      tickets_mysql:
+        condition: service_healthy
+    volumes:
+      - ./database/migrations:/migrations
+    command: [
+      "-path", "/migrations",
+      "-database", "mysql://testuser:testpassword@tcp(tickets_mysql:3306)/tickets",
+      "up"
+    ]
+

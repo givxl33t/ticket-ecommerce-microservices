@@ -21,7 +21,6 @@ app
   .use(documentationPlugin)
   .use(securityPlugin)
   .use(errorPlugin)
-
   .group("/api/users", (group) => {
     return group.use(authRoutes).use(protectedRoutes);
   });

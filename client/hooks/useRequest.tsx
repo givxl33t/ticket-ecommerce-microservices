@@ -15,8 +15,6 @@ interface IUseRequestProps {
 const useRequest = ({ url, method, body, onSuccess }: IUseRequestProps) => {
   const [errors, setErrors] = useState<ReactElement | null>(null);
 
-  console.log("errors: ", errors)
-
   const doRequest = async (props = {}) => {
     try {
       let response;
@@ -42,13 +40,19 @@ const useRequest = ({ url, method, body, onSuccess }: IUseRequestProps) => {
       setErrors(null);
       return response.data;
     } catch (errors: any) {
+      console.log("received errors: ", errors)
+
       setErrors(
         <Alert severity="error">
           <AlertTitle>Oops...</AlertTitle>
           <List disablePadding>
-            {errors.response.data.errors.map((err: any) => (
-              <ListItem key={err.message}>{err.message}</ListItem>
-            ))}
+            {Array.isArray(errors.response.data.message) ? (
+              errors.response.data.message.map((err: any) => (
+                <ListItem key={err.field}>{err.field}: {err.message}</ListItem>
+              ))
+            ) : (
+              <ListItem>{errors.response.data.message}</ListItem>
+            )}
           </List>
         </Alert>,
       );

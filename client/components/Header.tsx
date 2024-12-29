@@ -54,7 +54,7 @@ export default function Header() {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Typography component={Link} href={"/"} variant="h6" sx={{ my: 2 }}>
-        Tix-Micro
+        Ticket Commerce
       </Typography>
       <Divider />
       <List>
@@ -92,7 +92,7 @@ export default function Header() {
             href="/"
             sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
           >
-            Tix-Micro
+            Ticket Commerce
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {links.map((linkConfig) => {

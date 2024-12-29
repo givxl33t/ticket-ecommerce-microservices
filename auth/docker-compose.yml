@@ -4,16 +4,19 @@ services:
   ticketing_auth:
     container_name: 'ticketing_auth'
     image: "romenzonez/ticketing-auth:latest"
+    build: 
+      context: .
+      target: development-build-stage
     env_file: 
       - .env.docker
     depends_on:
-      elysia_bun_mongo:
+      ticketing_auth_mongo:
         condition: service_healthy
     ports:
-      - 8000:8000
+      - 4000:4000
 
-  elysia_bun_mongo:
-    container_name: 'elysia_bun_mongo'
+  ticketing_auth_mongo:
+    container_name: 'ticketing_auth_mongo'
     image: "mongo"
     ports:
       - "27017:27017"

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tickets-mysql-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tickets-mysql
+  template:
+    metadata:
+      labels:
+        app: tickets-mysql
+    spec:
+      containers:
+        - name: tickets-mysql
+          image: mysql:8.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ALLOW_EMPTY_PASSWORD
+              value: '1'
+            - name: MYSQL_DATABASE
+              value: 'tickets'
+            - name: MYSQL_USER
+              value: 'testuser'
+            - name: MYSQL_PASSWORD
+              value: 'testpassword'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tickets-mysql-srv
+spec:
+  selector:
+    app: tickets-mysql
+  ports:
+    - name: tickets-mysql
+      protocol: TCP
+      port: 3306
+      targetPort: 3306
