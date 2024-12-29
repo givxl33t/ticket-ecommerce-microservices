@@ -12,7 +12,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: 1
-          MYSQL_DATABASE: tickets
+          MYSQL_DATABASE: tickets_service
           MYSQL_USER: testuser
           MYSQL_PASSWORD: testpassword
         ports:
@@ -26,22 +26,6 @@ jobs:
         image: nats:latest
         ports:
           - 4222:4222
-    
-    env:
-      APP_NAME: "Tickets Service"
-      APP_PORT: 3000
-      APP_PREFORK: false
-      APP_TIMEOUT: 10
-      DB_USER: testuser
-      DB_PASSWORD: testpassword
-      DB_HOST: 127.0.0.1
-      DB_PORT: 3306
-      DB_NAME: tickets
-      POOL_IDLE: 5
-      POOL_MAX: 100
-      POOL_LIFETIME: 3000
-      LOG_LEVEL: 6
-      JWT_SECRET_KEY: secretkey
 
     runs-on: ubuntu-latest
     strategy:
