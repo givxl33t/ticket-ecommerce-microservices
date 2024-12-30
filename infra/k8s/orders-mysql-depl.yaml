@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-mysql-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders-mysql
+  template:
+    metadata:
+      labels:
+        app: orders-mysql
+    spec:
+      containers:
+        - name: orders-mysql
+          image: mysql:8.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ALLOW_EMPTY_PASSWORD
+              value: '1'
+            - name: MYSQL_DATABASE
+              value: 'orders'
+            - name: MYSQL_USER
+              value: 'testuser'
+            - name: MYSQL_PASSWORD
+              value: 'testpassword'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-mysql-srv
+spec:
+  selector:
+    app: orders-mysql
+  ports:
+    - name: orders-mysql
+      protocol: TCP
+      port: 3306
+      targetPort: 3306

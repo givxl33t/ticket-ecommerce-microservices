@@ -16,18 +16,24 @@ spec:
         - name: ticketing-orders
           image: romenzonez/ticketing-orders
           env:
-            - name: NATS_CLIENT_ID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
+            - name: APP_PORT
+              value: '3000'
             - name: NATS_URL
               value: 'http://nats-srv:4222'
-            - name: NATS_CLUSTER_ID
-              value: ticketing
-            - name: MONGO_URI
-              value: 'mongodb://orders-mongo-srv:27017/orders'
-            - name: JWT_KEY
+            - name: JWT_SECRET_KEY
               value: 'asdfasdf'
+            - name: DB_USER
+              value: 'testuser'
+            - name: DB_PASSWORD
+              value: 'testpassword'
+            - name: DB_HOST
+              value: 'orders-mysql-srv'
+            - name: DB_PORT
+              value: '3306'
+            - name: DB_NAME
+              value: 'orders'
+            - name: LOG_LEVEL
+              value: '2'
 ---
 apiVersion: v1
 kind: Service

@@ -3,7 +3,7 @@ CREATE TABLE tickets(
     title VARCHAR(100),
     price VARCHAR(100),
     user_id VARCHAR(255),
-    order_id VARCHAR(255) DEFAULT NULL,
+    order_id INT,
     created_at BIGINT,
     updated_at BIGINT,
     PRIMARY KEY(id)
