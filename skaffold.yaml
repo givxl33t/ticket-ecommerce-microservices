@@ -12,6 +12,7 @@ build:
       context: auth
       docker:
         dockerfile: Dockerfile
+        target: development-build-stage       
       sync:
         manual:
           - src: 'src/**/*.ts'

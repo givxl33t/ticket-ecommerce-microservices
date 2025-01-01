@@ -1,0 +1,60 @@
+version: '3.9'
+
+services:
+  ticketing_orders:
+    container_name: ticketing_orders
+    image: romenzonez/ticketing-orders:latest
+    restart: always
+    ports:
+      - 3001:3000
+    depends_on:
+      orders_mysql:
+        condition: service_healthy
+      orders_nats_server:
+        condition: service_healthy
+    env_file:
+      - .env.docker
+
+  orders_mysql:
+    container_name: orders_mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_DATABASE: orders
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testpassword
+    ports:
+      - 3307:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  orders_nats_server:
+    container_name: orders_nats_server
+    image: nats:latest
+    ports:
+      - 4222:4222
+    healthcheck:
+      test: ["CMD", "nats-server", "--version"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  ticketing_orders_migration:
+    container_name: ticketing_orders_migration
+    image: migrate/migrate
+    depends_on:
+      orders_mysql:
+        condition: service_healthy
+    volumes:
+      - ./database/migrations:/migrations
+    command: [
+      "-path", "/migrations",
+      "-database", "mysql://testuser:testpassword@tcp(orders_mysql:3306)/tickets",
+      "up"
+    ]
+

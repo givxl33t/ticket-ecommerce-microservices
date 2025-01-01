@@ -69,7 +69,7 @@ func (uc *TicketUsecaseImpl) Create(ctx context.Context, request *model.CreateTi
 
 func (uc *TicketUsecaseImpl) Update(ctx context.Context, request *model.UpdateTicketRequest) (*model.TicketResponse, error) {
 	if err := uc.Validate.Struct(request); err != nil {
-		uc.Logger.WithError(err).Error("failed validating request body")
+		uc.Logger.WithError(err).Error("failed to validate request body")
 		return nil, err
 	}
 
@@ -79,22 +79,28 @@ func (uc *TicketUsecaseImpl) Update(ctx context.Context, request *model.UpdateTi
 		return nil, exception.ErrTicketNotFound
 	}
 
-	if ticket.OrderID.Valid {
+	if request.OrderID == nil {
+		ticket.OrderID = sql.NullInt32{Valid: false}
+	} else if ticket.OrderID.Valid {
+		// if request.OrderID is defined (need to change OrderID value to another non-null)
+		// check whether the current OrderId is valid (already ordered)
 		uc.Logger.WithError(err).Error("ticket already ordered")
 		return nil, exception.ErrTicketAlreadyOrdered
+	} else {
+		ticket.OrderID = sql.NullInt32{Int32: *request.OrderID, Valid: true}
 	}
 
 	if ticket.UserID != request.UserID {
-		uc.Logger.WithError(err).Error("failed find ticket by id")
+		uc.Logger.WithError(err).Error("user unauthorized to update")
 		return nil, exception.ErrUserUnauthorized
 	}
 
-	ticket.Title = request.Title
-	ticket.Price = request.Price
-	if request.OrderID == nil {
-		ticket.OrderID = sql.NullInt32{Valid: false}
-	} else {
-		ticket.OrderID = sql.NullInt32{Int32: *request.OrderID, Valid: true}
+	if request.Title != "" {
+		ticket.Title = request.Title
+	}
+
+	if request.Price != 0 {
+		ticket.Price = request.Price
 	}
 
 	if err := uc.TicketRepository.Update(ctx, ticket); err != nil {
