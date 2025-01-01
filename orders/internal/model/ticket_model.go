@@ -4,8 +4,8 @@ import "database/sql"
 
 type TicketRequest struct {
 	ID    int32  `json:"id"`
-	Title string `json:"title" validate:"required,max=100"`
-	Price int64  `json:"price" validate:"required"`
+	Title string `json:"title"`
+	Price int64  `json:"price" `
 }
 
 type TicketResponse struct {

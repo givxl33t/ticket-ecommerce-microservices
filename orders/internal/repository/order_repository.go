@@ -46,7 +46,7 @@ func (r *OrderRepositoryImpl) Update(ctx context.Context, order *domain.Order) e
 
 func (r *OrderRepositoryImpl) FindAll(ctx context.Context, userId string) ([]domain.Order, error) {
 	var orders []domain.Order
-	if err := r.DB.WithContext(ctx).Where("user_id = ?", userId).Find(&orders).Error; err != nil {
+	if err := r.DB.WithContext(ctx).Where("user_id = ?", userId).Preload("Ticket").Find(&orders).Error; err != nil {
 		return nil, err
 	}
 
@@ -55,8 +55,7 @@ func (r *OrderRepositoryImpl) FindAll(ctx context.Context, userId string) ([]dom
 
 func (r *OrderRepositoryImpl) FindById(ctx context.Context, id int32) (*domain.Order, error) {
 	order := new(domain.Order)
-
-	if err := r.DB.WithContext(ctx).Where("id = ?", id).Take(order).Error; err != nil {
+	if err := r.DB.WithContext(ctx).Where("id = ?", id).Preload("Ticket").Take(order).Error; err != nil {
 		return nil, err
 	}
 

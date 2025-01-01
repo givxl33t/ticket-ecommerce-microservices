@@ -1,3 +1,33 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: tickets-mysql-pv
+  labels:
+    type: local # Sets the type of volume
+    app: tickets-mysql
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi # Sets the volume size
+  accessModes:
+    - ReadWriteOnce # Sets read and write access
+  hostPath:
+    path: "/var/lib/tickets-mysql" # Sets the path on the host
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tickets-mysql-pvc
+  labels:
+    app: tickets-mysql
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce # Sets read and write access
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -27,6 +57,13 @@ spec:
               value: 'testuser'
             - name: MYSQL_PASSWORD
               value: 'testpassword'
+          volumeMounts:
+            - name: tickets-mysql-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: tickets-mysql-storage
+          persistentVolumeClaim:
+            claimName: tickets-mysql-pvc
 ---
 apiVersion: v1
 kind: Service

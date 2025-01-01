@@ -109,7 +109,7 @@ func (h *OrderHandler) GetByID(c *fiber.Ctx) error {
 
 // Cancel Order godoc
 // @Summary Cancels A Order
-// @Description Cancels a order by id.
+// @Description  a order by id.
 // @Tags Orders
 // @Produce json
 // @Param id path int true "Order ID"
@@ -139,5 +139,6 @@ func (h *OrderHandler) Cancel(c *fiber.Ctx) error {
 	}
 
 	return c.
+		Status(fiber.StatusNoContent).
 		JSON(response)
 }

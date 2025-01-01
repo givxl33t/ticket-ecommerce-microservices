@@ -10,9 +10,9 @@ type CreateTicketRequest struct {
 
 type UpdateTicketRequest struct {
 	ID      int32  `json:"id" validate:"required"`
-	Title   string `json:"title" validate:"required,max=100"`
-	Price   int64  `json:"price" validate:"required"`
-	UserID  string `json:"user_id" validate:"required"`
+	Title   string `json:"title"`
+	Price   int64  `json:"price"`
+	UserID  string `json:"user_id"`
 	OrderID *int32 `json:"order_id"`
 }
 

@@ -1,5 +1,5 @@
 CREATE TABLE tickets(
-    id INT NOT NULL AUTO_INCREMENT,
+    id INT NOT NULL,
     title VARCHAR(100),
     price VARCHAR(100),
     PRIMARY KEY(id)

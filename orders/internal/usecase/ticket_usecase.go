@@ -41,6 +41,7 @@ func (uc *TicketUsecaseImpl) Create(ctx context.Context, request *model.TicketRe
 	}
 
 	ticket := new(domain.Ticket)
+	ticket.ID = request.ID
 	ticket.Title = request.Title
 	ticket.Price = request.Price
 

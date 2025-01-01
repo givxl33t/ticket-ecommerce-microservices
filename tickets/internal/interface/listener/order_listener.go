@@ -44,11 +44,14 @@ func (ol *OrderListener) HandleOrderCreated(data []byte) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	updateTicketOrderRequest := new(model.UpdateTicketRequest)
-	updateTicketOrderRequest.OrderID = event.ID
-	updateTicketOrderRequest.ID = event.Ticket.ID
+	updateTicketRequest := new(model.UpdateTicketRequest)
+	updateTicketRequest.Title = ""
+	updateTicketRequest.Price = 0
+	updateTicketRequest.OrderID = &event.ID
+	updateTicketRequest.UserID = event.UserID
+	updateTicketRequest.ID = event.TicketID
 
-	if _, err := ol.TicketUsecase.Update(ctx, updateTicketOrderRequest); err != nil {
+	if _, err := ol.TicketUsecase.Update(ctx, updateTicketRequest); err != nil {
 		ol.Logger.WithError(err).Error("failed to update ticket order")
 		return err
 	}
@@ -57,7 +60,7 @@ func (ol *OrderListener) HandleOrderCreated(data []byte) error {
 }
 
 func (ol *OrderListener) HandleOrderCancelled(data []byte) error {
-	var event model.OrderCreatedEvent
+	var event model.OrderCancelledEvent
 	if err := json.Unmarshal(data, &event); err != nil {
 		ol.Logger.WithError(err).Error("failed unmarshal order created event")
 		return err
@@ -68,11 +71,14 @@ func (ol *OrderListener) HandleOrderCancelled(data []byte) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	updateTicketOrderRequest := new(model.UpdateTicketRequest)
-	updateTicketOrderRequest.OrderID = event.ID
-	updateTicketOrderRequest.ID = event.Ticket.ID
+	updateTicketRequest := new(model.UpdateTicketRequest)
+	updateTicketRequest.Title = ""
+	updateTicketRequest.Price = 0
+	updateTicketRequest.ID = event.TicketID
+	updateTicketRequest.UserID = event.UserID
+	updateTicketRequest.OrderID = nil
 
-	if _, err := ol.TicketUsecase.Update(ctx, updateTicketOrderRequest); err != nil {
+	if _, err := ol.TicketUsecase.Update(ctx, updateTicketRequest); err != nil {
 		ol.Logger.WithError(err).Error("failed to update ticket order")
 		return err
 	}

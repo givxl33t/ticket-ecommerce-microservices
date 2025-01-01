@@ -75,6 +75,7 @@ func (uc *OrderUsecaseImpl) Create(ctx context.Context, request *model.CreateOrd
 	order.TicketID = request.TicketID
 	order.Status = domain.Created
 	order.ExpiresAt = expiration.Unix()
+	order.Ticket = *ticket
 
 	if err := uc.OrderRepository.Create(ctx, order); err != nil {
 		uc.Logger.WithError(err).Error("failed create order to database")
@@ -82,7 +83,7 @@ func (uc *OrderUsecaseImpl) Create(ctx context.Context, request *model.CreateOrd
 	}
 
 	// publish an event to subject order:created
-	if err := uc.OrderPublisher.Created(order, ticket); err != nil {
+	if err := uc.OrderPublisher.Created(order); err != nil {
 		uc.Logger.WithError(err).Error("failed publish event OrderCreated event")
 		return nil, exception.ErrMessageNotPublished
 	}
@@ -142,14 +143,12 @@ func (uc *OrderUsecaseImpl) Cancel(ctx context.Context, request *model.Authentic
 		return nil, exception.ErrUserUnauthorized
 	}
 
-	// update the order to have status of cancelled
 	order.Status = domain.Cancelled
 	if err := uc.OrderRepository.Update(ctx, order); err != nil {
 		uc.Logger.WithError(err).Error("failed cancel order in database")
 		return nil, exception.ErrInternalServerError
 	}
 
-	// publish an event to subject order:cancelled
 	if err := uc.OrderPublisher.Cancelled(order); err != nil {
 		uc.Logger.WithError(err).Error("failed publish event OrderCancelled event")
 		return nil, exception.ErrMessageNotPublished
@@ -160,7 +159,7 @@ func (uc *OrderUsecaseImpl) Cancel(ctx context.Context, request *model.Authentic
 
 func (uc *OrderUsecaseImpl) UpdateStatus(ctx context.Context, request *model.UpdateOrderStatusRequest) error {
 	if err := uc.Validate.Struct(request); err != nil {
-		uc.Logger.WithError(err).Error("failed validating request body")
+		uc.Logger.WithError(err).Error("failed to validate  request body")
 		return err
 	}
 
@@ -177,7 +176,6 @@ func (uc *OrderUsecaseImpl) UpdateStatus(ctx context.Context, request *model.Upd
 	}
 
 	if request.Status == domain.Cancelled {
-		// publish an event to subject order:cancelled
 		if err := uc.OrderPublisher.Cancelled(order); err != nil {
 			uc.Logger.WithError(err).Error("failed publish event OrderCancelled event")
 			return exception.ErrMessageNotPublished

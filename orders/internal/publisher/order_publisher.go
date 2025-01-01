@@ -10,7 +10,7 @@ import (
 )
 
 type OrderPublisher interface {
-	Created(order *domain.Order, ticket *domain.Ticket) error
+	Created(order *domain.Order) error
 	Cancelled(order *domain.Order) error
 }
 
@@ -24,12 +24,12 @@ func NewOrderPublisher(natsConn *nats.Conn) OrderPublisher {
 	}
 }
 
-func (p *OrderPublisherImpl) Created(order *domain.Order, ticket *domain.Ticket) error {
+func (p *OrderPublisherImpl) Created(order *domain.Order) error {
 	message := model.OrderCreatedEvent{
 		ID:        order.ID,
 		Status:    order.Status,
 		UserID:    order.UserID,
-		Ticket:    *ticket,
+		TicketID:  order.TicketID,
 		ExpiresAt: order.ExpiresAt,
 		CreatedAt: order.CreatedAt,
 		UpdatedAt: order.UpdatedAt,
@@ -54,6 +54,7 @@ func (p *OrderPublisherImpl) Cancelled(order *domain.Order) error {
 	message := model.OrderCancelledEvent{
 		ID:       order.ID,
 		TicketID: order.TicketID,
+		UserID:   order.UserID,
 	}
 
 	data, err := json.Marshal(message)

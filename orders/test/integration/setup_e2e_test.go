@@ -3,15 +3,15 @@ package integration
 import (
 	"testing"
 
-	"ticketing/tickets/config"
-	"ticketing/tickets/internal/domain"
-	"ticketing/tickets/internal/infrastructure"
-	"ticketing/tickets/internal/infrastructure/middleware"
-	"ticketing/tickets/internal/interface/http/handler"
-	"ticketing/tickets/internal/interface/http/route"
-	"ticketing/tickets/internal/publisher"
-	"ticketing/tickets/internal/repository"
-	"ticketing/tickets/internal/usecase"
+	"ticketing/orders/config"
+	"ticketing/orders/internal/domain"
+	"ticketing/orders/internal/infrastructure"
+	"ticketing/orders/internal/infrastructure/middleware"
+	"ticketing/orders/internal/interface/http/handler"
+	"ticketing/orders/internal/interface/http/route"
+	"ticketing/orders/internal/publisher"
+	"ticketing/orders/internal/repository"
+	"ticketing/orders/internal/usecase"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -30,10 +30,11 @@ type e2eTestSuite struct {
 	NATS             *nats.Conn
 	Log              *logrus.Logger
 	Validate         *validator.Validate
+	OrderRepository repository.OrderRepository
 	TicketRepository repository.TicketRepository
-	TicketPublisher  publisher.TicketPublisher
-	TicketUsecase    usecase.TicketUsecase
-	TicketHandler    *handler.TicketHandler
+	OrderPublisher  publisher.OrderPublisher
+	OrderUsecase    usecase.OrderUsecase
+	OrderHandler    *handler.OrderHandler
 	AuthMiddleware   fiber.Handler
 }
 
@@ -48,12 +49,12 @@ func (s *e2eTestSuite) SetupSuite() {
 	s.Log = infrastructure.NewLogger(s.Config)
 	s.App = infrastructure.NewFiber(s.Config)
 	s.Validate = infrastructure.NewValidator(s.Config)
-	s.TicketRepository = repository.NewTicketRepository(s.DB)
-	s.TicketPublisher = publisher.NewTicketPublisher(s.NATS)
-	s.TicketUsecase = usecase.NewTicketUsecase(s.TicketRepository, s.TicketPublisher, s.Log, s.Validate, s.Config)
-	s.TicketHandler = handler.NewTicketHandler(s.TicketUsecase, s.Log)
+	s.OrderRepository = repository.NewOrderRepository(s.DB)
+	s.OrderPublisher = publisher.NewOrderPublisher(s.NATS)
+	s.OrderUsecase = usecase.NewOrderUsecase(s.OrderRepository, s.TicketRepository, s.OrderPublisher, s.Log, s.Validate, s.Config)
+	s.OrderHandler = handler.NewOrderHandler(s.OrderUsecase, s.Log)
 	s.AuthMiddleware = middleware.NewAuth(s.Log, s.Config)
-	route.RegisterRoute(s.App, s.TicketHandler, s.AuthMiddleware)
+	route.RegisterRoute(s.App, s.OrderHandler, s.AuthMiddleware)
 }
 
 func (s *e2eTestSuite) SetupTest() {

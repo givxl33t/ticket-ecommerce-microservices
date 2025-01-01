@@ -10,7 +10,7 @@ func ToOrderResponse(order *domain.Order) *model.OrderResponse {
 		ID:        order.ID,
 		Status:    order.Status,
 		UserID:    order.UserID,
-		TicketID:  order.TicketID,
+		Ticket:    order.Ticket,
 		ExpiresAt: order.ExpiresAt,
 		CreatedAt: order.CreatedAt,
 		UpdatedAt: order.UpdatedAt,

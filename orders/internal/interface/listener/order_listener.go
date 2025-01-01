@@ -114,7 +114,7 @@ func (ol *OrderListener) HandleTicketUpdated(data []byte) error {
 		return err
 	}
 
-	log.Printf("Processing TicketCreatedEvent: %v\n", event)
+	log.Printf("Processing TicketUpdatedEvent: %v\n", event)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

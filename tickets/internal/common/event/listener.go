@@ -20,7 +20,7 @@ type Listener struct {
 }
 
 func (l *Listener) Listener() {
-	sub, err := l.NatsConn.QueueSubscribe(l.Subject, l.QueueGroup, func(msg *nats.Msg) {
+	_, err := l.NatsConn.QueueSubscribe(l.Subject, l.QueueGroup, func(msg *nats.Msg) {
 		log.Printf("Message received: Subject: %s, Queue: %s\n", l.Subject, l.QueueGroup)
 
 		if err := l.OnMessageFunc(msg.Data); err != nil {
@@ -37,5 +37,6 @@ func (l *Listener) Listener() {
 	}
 
 	log.Printf("Listening on subject: %s, queue: %s\n", l.Subject, l.QueueGroup)
-	defer sub.Unsubscribe()
+
+	// Do not defer unsubscribe or else after a successfull listen it would unsubscribe immediately
 }
