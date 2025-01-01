@@ -7,11 +7,11 @@ ENV_LOCAL_TEST=\
 				DB_PASSWORD= \
 				DB_HOST=localhost \
 				DB_PORT=3306 \
-				DB_NAME=tickets_service \
+				DB_NAME=orders_service \
 				POOL_IDLE=5 \
 				POOL_MAX=100 \
 				POOL_LIFETIME=3000 \
-				LOG_LEVEL=6 \
+				LOG_LEVEL=2 \
 				JWT_SECRET_KEY=secretkey \
 				NATS_URL=http://localhost:4222
 
@@ -22,10 +22,10 @@ swagger.generate:
 				swag init -g cmd/web/main.go
 
 test.unit:
-				APP_ENV=test go test ./test/unit -v -coverprofile=./coverage/unit-coverage.out -coverpkg=github.com/givxl33t/ticketing-tickets/internal/...
+				APP_ENV=test go test ./test/unit -v -coverprofile=./coverage/unit-coverage.out -coverpkg=github.com/givxl33t/ticketing-orders/internal/...
 
 test.integration:
-				APP_ENV=test $(ENV_LOCAL_TEST) go test ./test/integration -v -coverprofile=./coverage/integration-coverage.out -coverpkg=github.com/givxl33t/ticketing-tickets/internal/...
+				APP_ENV=test $(ENV_LOCAL_TEST) go test ./test/integration -v -coverprofile=./coverage/integration-coverage.out -coverpkg=github.com/givxl33t/ticketing-orders/internal/...
 
 ifneq (,$(wildcard .env))
     include .env

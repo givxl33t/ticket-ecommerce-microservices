@@ -82,7 +82,6 @@ func (uc *OrderUsecaseImpl) Create(ctx context.Context, request *model.CreateOrd
 		return nil, exception.ErrInternalServerError
 	}
 
-	// publish an event to subject order:created
 	if err := uc.OrderPublisher.Created(order); err != nil {
 		uc.Logger.WithError(err).Error("failed publish event OrderCreated event")
 		return nil, exception.ErrMessageNotPublished

@@ -30,11 +30,12 @@ type e2eTestSuite struct {
 	NATS             *nats.Conn
 	Log              *logrus.Logger
 	Validate         *validator.Validate
-	OrderRepository repository.OrderRepository
+	OrderRepository  repository.OrderRepository
 	TicketRepository repository.TicketRepository
-	OrderPublisher  publisher.OrderPublisher
-	OrderUsecase    usecase.OrderUsecase
-	OrderHandler    *handler.OrderHandler
+	OrderPublisher   publisher.OrderPublisher
+	OrderUsecase     usecase.OrderUsecase
+	TicketUsecase    usecase.TicketUsecase
+	OrderHandler     *handler.OrderHandler
 	AuthMiddleware   fiber.Handler
 }
 
@@ -50,17 +51,19 @@ func (s *e2eTestSuite) SetupSuite() {
 	s.App = infrastructure.NewFiber(s.Config)
 	s.Validate = infrastructure.NewValidator(s.Config)
 	s.OrderRepository = repository.NewOrderRepository(s.DB)
+	s.TicketRepository = repository.NewTicketRepository(s.DB)
 	s.OrderPublisher = publisher.NewOrderPublisher(s.NATS)
 	s.OrderUsecase = usecase.NewOrderUsecase(s.OrderRepository, s.TicketRepository, s.OrderPublisher, s.Log, s.Validate, s.Config)
+	s.TicketUsecase = usecase.NewTicketUsecase(s.TicketRepository, s.Log, s.Validate, s.Config)
 	s.OrderHandler = handler.NewOrderHandler(s.OrderUsecase, s.Log)
 	s.AuthMiddleware = middleware.NewAuth(s.Log, s.Config)
 	route.RegisterRoute(s.App, s.OrderHandler, s.AuthMiddleware)
 }
 
 func (s *e2eTestSuite) SetupTest() {
-	s.Require().NoError(s.DB.Migrator().AutoMigrate(&domain.Ticket{}))
+	s.Require().NoError(s.DB.Migrator().AutoMigrate(&domain.Ticket{}, &domain.Order{}))
 }
 
 func (s *e2eTestSuite) TearDownTest() {
-	s.Require().NoError(s.DB.Migrator().DropTable("tickets"))
+	s.Require().NoError(s.DB.Migrator().DropTable("tickets", "orders"))
 }

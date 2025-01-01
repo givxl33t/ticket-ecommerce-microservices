@@ -12,7 +12,7 @@ package mocks
 import (
 	context "context"
 	reflect "reflect"
-	domain "ticketing/tickets/internal/domain"
+	domain "ticketing/orders/internal/domain"
 
 	gomock "go.uber.org/mock/gomock"
 )
@@ -42,32 +42,17 @@ func (m *MockTicketRepository) EXPECT() *MockTicketRepositoryMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockTicketRepository) Create(ctx context.Context, ticket *domain.Ticket) error {
+func (m *MockTicketRepository) Create(ctx context.Context, order *domain.Ticket) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", ctx, ticket)
+	ret := m.ctrl.Call(m, "Create", ctx, order)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockTicketRepositoryMockRecorder) Create(ctx, ticket any) *gomock.Call {
+func (mr *MockTicketRepositoryMockRecorder) Create(ctx, order any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockTicketRepository)(nil).Create), ctx, ticket)
-}
-
-// FindAll mocks base method.
-func (m *MockTicketRepository) FindAll(ctx context.Context) ([]domain.Ticket, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAll", ctx)
-	ret0, _ := ret[0].([]domain.Ticket)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindAll indicates an expected call of FindAll.
-func (mr *MockTicketRepositoryMockRecorder) FindAll(ctx any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockTicketRepository)(nil).FindAll), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockTicketRepository)(nil).Create), ctx, order)
 }
 
 // FindById mocks base method.
@@ -86,15 +71,15 @@ func (mr *MockTicketRepositoryMockRecorder) FindById(ctx, id any) *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockTicketRepository) Update(ctx context.Context, ticket *domain.Ticket) error {
+func (m *MockTicketRepository) Update(ctx context.Context, order *domain.Ticket) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, ticket)
+	ret := m.ctrl.Call(m, "Update", ctx, order)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockTicketRepositoryMockRecorder) Update(ctx, ticket any) *gomock.Call {
+func (mr *MockTicketRepositoryMockRecorder) Update(ctx, order any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockTicketRepository)(nil).Update), ctx, ticket)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockTicketRepository)(nil).Update), ctx, order)
 }

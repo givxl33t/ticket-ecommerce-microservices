@@ -14,7 +14,7 @@ type Order struct {
 	Status    string `gorm:"column:status;type:enum('created','cancelled','awaiting:payment','complete');not null"`
 	UserID    string `gorm:"column:user_id"`
 	TicketID  int32  `gorm:"column:ticket_id"`
-	Ticket    Ticket `gorm:"foreignKey:ID;references:TicketID"`
+	Ticket    Ticket `gorm:"foreignKey:TicketID;references:ID"`
 	ExpiresAt int64  `gorm:"column:expires_at"`
 	CreatedAt int64  `gorm:"column:created_at;autoUpdateTime:milli"`
 	UpdatedAt int64  `gorm:"column:updated_at;autoUpdateTime:milli"`
