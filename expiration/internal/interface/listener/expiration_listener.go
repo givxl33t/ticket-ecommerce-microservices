@@ -58,7 +58,7 @@ func (ol *ExpirationListener) HandleOrderCreated(data []byte) error {
 
 func (ol *ExpirationListener) Listen() {
 	ticketUpdatedListener := &event.Listener{
-		Subject:       domain.TicketUpdated,
+		Subject:       domain.OrderCreated,
 		QueueGroup:    QueueGroupName,
 		NatsConn:      ol.NatsConn,
 		OnMessageFunc: ol.HandleOrderCreated,

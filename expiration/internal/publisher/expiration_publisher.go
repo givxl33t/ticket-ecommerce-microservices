@@ -38,7 +38,7 @@ func (p *ExpirationPublisherImpl) Expired(orderId int32) error {
 		return err
 	}
 
-	log.Printf("Published event on subject: %s", domain.OrderCreated)
+	log.Printf("Published event on subject: %s", domain.ExpirationComplete)
 
 	return nil
 }
