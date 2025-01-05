@@ -14,7 +14,8 @@ interface IUseRequestProps {
 
 const useRequest = ({ url, method, body, onSuccess }: IUseRequestProps) => {
   const [errors, setErrors] = useState<ReactElement | null>(null);
-
+  // If we were to log body here, remember we are in client side
+  // so we need to check the logs on the browser on the server side
   const doRequest = async (props = {}) => {
     try {
       let response;

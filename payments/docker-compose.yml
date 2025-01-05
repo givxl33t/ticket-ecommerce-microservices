@@ -1,0 +1,60 @@
+version: '3.9'
+
+services:
+  ticketing_payments:
+    container_name: ticketing_payments
+    image: romenzonez/ticketing-payments:latest
+    restart: always
+    ports:
+      - 3001:3000
+    depends_on:
+      payments_mysql:
+        condition: service_healthy
+      payments_nats_server:
+        condition: service_healthy
+    env_file:
+      - .env.docker
+
+  payments_mysql:
+    container_name: payments_mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_DATABASE: payments
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testpassword
+    ports:
+      - 3307:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  payments_nats_server:
+    container_name: payments_nats_server
+    image: nats:latest
+    ports:
+      - 4222:4222
+    healthcheck:
+      test: ["CMD", "nats-server", "--version"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  ticketing_payments_migration:
+    container_name: ticketing_payments_migration
+    image: migrate/migrate
+    depends_on:
+      payments_mysql:
+        condition: service_healthy
+    volumes:
+      - ./database/migrations:/migrations
+    command: [
+      "-path", "/migrations",
+      "-database", "mysql://testuser:testpassword@tcp(payments_mysql:3306)/tickets",
+      "up"
+    ]
+

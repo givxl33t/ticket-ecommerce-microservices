@@ -52,7 +52,6 @@ func (h *TicketHandler) GetAll(c *fiber.Ctx) error {
 // @Router /tickets [post]
 func (h *TicketHandler) Create(c *fiber.Ctx) error {
 	createTicketRequest := new(model.CreateTicketRequest)
-
 	if err := c.BodyParser(createTicketRequest); err != nil {
 		h.Logger.WithError(err).Error("error parsing request body")
 		return err

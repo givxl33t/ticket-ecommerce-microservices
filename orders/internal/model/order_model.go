@@ -18,23 +18,28 @@ type AuthenticatedOrderRequest struct {
 }
 
 type OrderResponse struct {
-	ID        int32         `json:"id"`
-	Status    string        `json:"status"`
-	UserID    string        `json:"user_id"`
-	Ticket    domain.Ticket `json:"ticket"`
-	ExpiresAt int64         `json:"expires_at"`
-	CreatedAt int64         `json:"created_at"`
-	UpdatedAt int64         `json:"updated_at"`
+	ID        int32          `json:"id"`
+	Status    string         `json:"status"`
+	UserID    string         `json:"user_id"`
+	Ticket    TicketResponse `json:"ticket"`
+	ExpiresAt int64          `json:"expires_at"`
+	CreatedAt int64          `json:"created_at"`
+	UpdatedAt int64          `json:"updated_at"`
+}
+
+type TicketResponse struct {
+	ID    int32  `json:"id"`
+	Title string `json:"title"`
+	Price int64  `json:"price"`
 }
 
 type OrderCreatedEvent struct {
-	ID        int32  `json:"id"`
-	Status    string `json:"status"`
-	UserID    string `json:"user_id"`
-	TicketID  int32  `json:"ticket_id"`
-	ExpiresAt int64  `json:"expires_at"`
-	CreatedAt int64  `json:"created_at"`
-	UpdatedAt int64  `json:"updated_at"`
+	ID        int32         `json:"id"`
+	Status    string        `json:"status"`
+	UserID    string        `json:"user_id"`
+	TicketID  int32         `json:"ticket_id"`
+	Ticket    domain.Ticket `json:"ticket"`
+	ExpiresAt int64         `json:"expires_at"`
 }
 
 type OrderCancelledEvent struct {

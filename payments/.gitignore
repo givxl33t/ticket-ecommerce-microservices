@@ -1,0 +1,5 @@
+# coverage files
+coverage/**.out
+
+# environment variables
+.env 

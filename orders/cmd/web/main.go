@@ -57,7 +57,7 @@ func main() {
 	route.RegisterRoute(app, orderHandler, authMiddleware)
 
 	// // Listeners
-	orderListener := listener.NewOrderListener(orderUsecase, ticketUsecase, natsConn, logger)
+	orderListener := listener.NewOrderListener(orderUsecase, orderRepository, ticketUsecase, natsConn, logger)
 	orderListener.Listen()
 
 	go func() {

@@ -29,7 +29,7 @@ func NewExpirationUsecase(ts *asynq.Client, log *logrus.Logger) ExpirationUsecas
 }
 
 func (uc *ExpirationUsecaseImpl) ScheduleExpiration(ctx context.Context, request *model.OrderExpirationPayload) error {
-	delay := time.Duration(request.Delay) * time.Second
+	delay := time.Duration(request.Delay) * time.Millisecond
 
 	if delay < 0 {
 		delay = 0

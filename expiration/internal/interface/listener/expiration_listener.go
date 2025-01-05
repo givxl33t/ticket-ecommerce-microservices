@@ -46,7 +46,7 @@ func (ol *ExpirationListener) HandleOrderCreated(data []byte) error {
 
 	orderPayload := new(model.OrderExpirationPayload)
 	orderPayload.OrderID = event.ID
-	orderPayload.Delay = event.ExpiresAt - time.Now().Unix()
+	orderPayload.Delay = event.ExpiresAt - time.Now().UnixMilli()
 
 	if err := ol.ExpirationUsecase.ScheduleExpiration(ctx, orderPayload); err != nil {
 		ol.Logger.WithError(err).Error("failed to schedule expiration")

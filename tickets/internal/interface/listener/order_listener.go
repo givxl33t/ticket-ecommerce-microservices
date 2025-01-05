@@ -49,7 +49,7 @@ func (ol *OrderListener) HandleOrderCreated(data []byte) error {
 	updateTicketRequest.Price = 0
 	updateTicketRequest.OrderID = &event.ID
 	updateTicketRequest.UserID = event.UserID
-	updateTicketRequest.ID = event.TicketID
+	updateTicketRequest.ID = event.Ticket.ID
 
 	if _, err := ol.TicketUsecase.Update(ctx, updateTicketRequest); err != nil {
 		ol.Logger.WithError(err).Error("failed to update ticket order")
