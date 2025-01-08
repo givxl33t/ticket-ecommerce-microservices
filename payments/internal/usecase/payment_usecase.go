@@ -29,8 +29,8 @@ type PaymentUsecaseImpl struct {
 	Config            *viper.Viper
 }
 
-func NewPaymentUsecase(paymentRepo repository.PaymentRepository, orderRepo repository.OrderRepository,
-	paymentPublisher publisher.PaymentPublisher, log *logrus.Logger, validate *validator.Validate, config *viper.Viper) PaymentUsecase {
+func NewPaymentUsecase(paymentRepo repository.PaymentRepository, paymentPublisher publisher.PaymentPublisher,
+	orderRepo repository.OrderRepository, log *logrus.Logger, validate *validator.Validate, config *viper.Viper) PaymentUsecase {
 	return &PaymentUsecaseImpl{
 		PaymentRepository: paymentRepo,
 		PaymentPublisher:  paymentPublisher,
@@ -63,7 +63,8 @@ func (uc *PaymentUsecaseImpl) Create(ctx context.Context, request *model.Payment
 		return nil, exception.ErrOrderNotFound
 	}
 
-	// illegal stripe payment all on usecase
+	// stripe logic shouldnt be here, but as of right now
+	// we would like make it work first
 	stripe.Key = uc.Config.GetString("STRIPE_KEY")
 	intentParams := &stripe.PaymentIntentParams{
 		Amount:             stripe.Int64(order.Price),

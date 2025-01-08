@@ -23,33 +23,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/tickets": {
-            "get": {
-                "description": "Fetches all ticket data.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tickets"
-                ],
-                "summary": "Get All Tickets",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.TicketResponse"
-                            }
-                        }
-                    }
-                }
-            },
+        "/payments": {
             "post": {
-                "description": "Create a new ticket.",
+                "description": "Create a new payment.",
                 "consumes": [
                     "application/json"
                 ],
@@ -57,17 +33,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Tickets"
+                    "payments"
                 ],
-                "summary": "Create Ticket",
+                "summary": "Create Payment",
                 "parameters": [
                     {
-                        "description": "Ticket Create Request",
+                        "description": "Payment Create Request",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.CreateTicketRequest"
+                            "$ref": "#/definitions/model.PaymentRequest"
                         }
                     }
                 ],
@@ -75,75 +51,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/model.TicketResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/tickets/{id}": {
-            "get": {
-                "description": "Fetches a ticket by id.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tickets"
-                ],
-                "summary": "Get A Ticket",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Ticket ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.TicketResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Updates a ticket data by id.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tickets"
-                ],
-                "summary": "Update A Ticket",
-                "parameters": [
-                    {
-                        "description": "Ticket Update Request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.UpdateTicketRequest"
-                        }
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Ticket ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.TicketResponse"
+                            "$ref": "#/definitions/model.PaymentResponse"
                         }
                     }
                 }
@@ -151,45 +59,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "model.CreateTicketRequest": {
+        "model.PaymentRequest": {
             "type": "object",
             "required": [
-                "price",
-                "title",
+                "order_id",
                 "user_id"
             ],
             "properties": {
-                "price": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.TicketResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
                 "order_id": {
-                    "type": "integer"
-                },
-                "price": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "updated_at": {
                     "type": "integer"
                 },
                 "user_id": {
@@ -197,29 +74,10 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UpdateTicketRequest": {
+        "model.PaymentResponse": {
             "type": "object",
-            "required": [
-                "id",
-                "price",
-                "title",
-                "user_id"
-            ],
             "properties": {
                 "id": {
-                    "type": "integer"
-                },
-                "order_id": {
-                    "type": "integer"
-                },
-                "price": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -238,10 +96,10 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:3000",
-	BasePath:         "/api/v1",
+	BasePath:         "/api",
 	Schemes:          []string{},
-	Title:            "Tickets Service",
-	Description:      "Tickets Service HTTP API Docs",
+	Title:            "Payments Service",
+	Description:      "Payments Service HTTP API Docs",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

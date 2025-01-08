@@ -24,19 +24,19 @@ import (
 
 type e2eTestSuite struct {
 	suite.Suite
-	Config           *viper.Viper
-	App              *fiber.App
-	DB               *gorm.DB
-	NATS             *nats.Conn
-	Log              *logrus.Logger
-	Validate         *validator.Validate
-	OrderRepository  repository.OrderRepository
-	TicketRepository repository.TicketRepository
-	OrderPublisher   publisher.OrderPublisher
-	OrderUsecase     usecase.OrderUsecase
-	TicketUsecase    usecase.TicketUsecase
-	OrderHandler     *handler.OrderHandler
-	AuthMiddleware   fiber.Handler
+	Config            *viper.Viper
+	App               *fiber.App
+	DB                *gorm.DB
+	NATS              *nats.Conn
+	Log               *logrus.Logger
+	Validate          *validator.Validate
+	OrderRepository   repository.OrderRepository
+	PaymentRepository repository.PaymentRepository
+	PaymentPublisher  publisher.PaymentPublisher
+	PaymentUsecase    usecase.PaymentUsecase
+	PaymentHandler    *handler.PaymentHandler
+	OrderUsecase      usecase.OrderUsecase
+	AuthMiddleware    fiber.Handler
 }
 
 func TestE2eSuite(t *testing.T) {
@@ -48,20 +48,18 @@ func (s *e2eTestSuite) SetupSuite() {
 	s.DB = infrastructure.NewGorm(s.Config)
 	s.NATS = infrastructure.NewNATS(s.Config)
 	s.Log = infrastructure.NewLogger(s.Config)
-	s.App = infrastructure.NewFiber(s.Config)
-	s.Validate = infrastructure.NewValidator(s.Config)
 	s.OrderRepository = repository.NewOrderRepository(s.DB)
-	s.TicketRepository = repository.NewTicketRepository(s.DB)
-	s.OrderPublisher = publisher.NewOrderPublisher(s.NATS)
-	s.OrderUsecase = usecase.NewOrderUsecase(s.OrderRepository, s.TicketRepository, s.OrderPublisher, s.Log, s.Validate, s.Config)
-	s.TicketUsecase = usecase.NewTicketUsecase(s.TicketRepository, s.Log, s.Validate, s.Config)
-	s.OrderHandler = handler.NewOrderHandler(s.OrderUsecase, s.Log)
+	s.PaymentRepository = repository.NewPaymentRepository(s.DB)
+	s.PaymentPublisher = publisher.NewPaymentPublisher(s.NATS)
+	s.OrderUsecase = usecase.NewOrderUsecase(s.OrderRepository, s.Log, s.Validate, s.Config)
+	s.PaymentUsecase = usecase.NewPaymentUsecase(s.PaymentRepository, s.PaymentPublisher, s.OrderRepository, s.Log, s.Validate, s.Config)
+	s.PaymentHandler = handler.NewPaymentHandler(s.PaymentUsecase, s.Log)
 	s.AuthMiddleware = middleware.NewAuth(s.Log, s.Config)
-	route.RegisterRoute(s.App, s.OrderHandler, s.AuthMiddleware)
+	route.RegisterRoute(s.App, s.PaymentHandler, s.AuthMiddleware)
 }
 
 func (s *e2eTestSuite) SetupTest() {
-	s.Require().NoError(s.DB.Migrator().AutoMigrate(&domain.Ticket{}, &domain.Order{}))
+	s.Require().NoError(s.DB.Migrator().AutoMigrate(&domain.Payment{}, &domain.Order{}))
 }
 
 func (s *e2eTestSuite) TearDownTest() {

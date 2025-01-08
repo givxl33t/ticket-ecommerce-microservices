@@ -55,21 +55,6 @@ func (mr *MockOrderRepositoryMockRecorder) Create(ctx, order any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockOrderRepository)(nil).Create), ctx, order)
 }
 
-// FindAll mocks base method.
-func (m *MockOrderRepository) FindAll(ctx context.Context, userId string) ([]domain.Order, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAll", ctx, userId)
-	ret0, _ := ret[0].([]domain.Order)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindAll indicates an expected call of FindAll.
-func (mr *MockOrderRepositoryMockRecorder) FindAll(ctx, userId any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockOrderRepository)(nil).FindAll), ctx, userId)
-}
-
 // FindById mocks base method.
 func (m *MockOrderRepository) FindById(ctx context.Context, id int32) (*domain.Order, error) {
 	m.ctrl.T.Helper()
@@ -83,21 +68,6 @@ func (m *MockOrderRepository) FindById(ctx context.Context, id int32) (*domain.O
 func (mr *MockOrderRepositoryMockRecorder) FindById(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindById", reflect.TypeOf((*MockOrderRepository)(nil).FindById), ctx, id)
-}
-
-// IsTicketReserved mocks base method.
-func (m *MockOrderRepository) IsTicketReserved(ctx context.Context, ticketId int32) (bool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IsTicketReserved", ctx, ticketId)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// IsTicketReserved indicates an expected call of IsTicketReserved.
-func (mr *MockOrderRepositoryMockRecorder) IsTicketReserved(ctx, ticketId any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsTicketReserved", reflect.TypeOf((*MockOrderRepository)(nil).IsTicketReserved), ctx, ticketId)
 }
 
 // Update mocks base method.

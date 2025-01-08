@@ -20,27 +20,27 @@ var (
 	ctx = context.Background()
 )
 
-func TestCreateOrder(t *testing.T) {
+func TestCreatePayment(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	orderRepository := mocks.NewMockOrderRepository(ctrl)
-	ticketRepository := mocks.NewMockTicketRepository(ctrl)
-	orderPublisher := mocks.NewMockOrderPublisher(ctrl)
-	orderUsecase := usecase.NewOrderUsecase(orderRepository, ticketRepository, orderPublisher, logrus.New(), validator.New(), config.New())
+	paymentRepository := mocks.NewMockPaymentRepository(ctrl)
+	paymentPublisher := mocks.NewMockPaymentPublisher(ctrl)
+	paymentUsecase := usecase.NewPaymentUsecase(paymentRepository, paymentPublisher, orderRepository, logrus.New(), validator.New(), config.New())
 
 	t.Run("success", func(t *testing.T) {
 		orderRepository.EXPECT().Create(ctx, gomock.Any()).Return(nil)
-		ticketRepository.EXPECT().FindById(ctx, gomock.Any()).Return(&domain.Ticket{
+		paymentRepository.EXPECT().FindById(ctx, gomock.Any()).Return(&domain.Ticket{
 			ID: 1, // Manually set the return value for mocks??
 		}, nil)
 		orderRepository.EXPECT().IsTicketReserved(ctx, gomock.Any()).Return(false, nil)
-		orderPublisher.EXPECT().Created(gomock.Any()).Return(nil)
+		paymentPublisher.EXPECT().Created(gomock.Any()).Return(nil)
 
 		request := &model.CreateOrderRequest{
 			TicketID: 1,
 			UserID:   "user-1",
 		}
 
-		response, err := orderUsecase.Create(ctx, request)
+		response, err := paymentUsecase.Create(ctx, request)
 
 		assert.NoError(t, err)
 		assert.Equal(t, request.TicketID, response.Ticket.ID)
@@ -53,7 +53,7 @@ func TestCreateOrder(t *testing.T) {
 			UserID:   "",
 		}
 
-		_, err := orderUsecase.Create(ctx, request)
+		_, err := paymentUsecase.Create(ctx, request)
 		assert.Error(t, err)
 	})
 }

@@ -48,7 +48,7 @@ func main() {
 	orderRepository := repository.NewOrderRepository(db)
 	paymentRepository := repository.NewPaymentRepository(db)
 	paymentPublisher := publisher.NewPaymentPublisher(natsConn)
-	paymentUsecase := usecase.NewPaymentUsecase(paymentRepository, orderRepository, paymentPublisher, logger, validate, config)
+	paymentUsecase := usecase.NewPaymentUsecase(paymentRepository, paymentPublisher, orderRepository, logger, validate, config)
 	paymentHandler := handler.NewPaymentHandler(paymentUsecase, logger)
 	orderUsecase := usecase.NewOrderUsecase(orderRepository, logger, validate, config)
 
