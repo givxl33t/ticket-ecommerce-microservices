@@ -14,10 +14,11 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func (s *e2eTestSuite) TestOrderCreatedSuccess() {
-	s.CreateDummyTicket(
+func (s *e2eTestSuite) TestPaymentCreatedSuccess() {
+	s.CreateDummyOrder(
 		1,
-		"Ticket 1",
+		"created",
+		"adsasdasdas",
 		1000,
 	)
 
@@ -96,18 +97,19 @@ func (s *e2eTestSuite) GenerateUserToken() string {
 	return token
 }
 
-// create a dummy ticket data
-func (s *e2eTestSuite) CreateDummyTicket(ID int, Title string, Price int) {
-	ticket := &model.TicketRequest{
-		ID:    int32(ID),
-		Title: Title,
-		Price: int64(Price),
+// create a dummy order data
+func (s *e2eTestSuite) CreateDummyOrder(ID int, Status string, UserID string, Price int) {
+	order := &model.CreateOrderRequest{
+		ID:     int32(ID),
+		Status: Status,
+		UserID: UserID,
+		Price:  int64(Price),
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if err := s.TicketUsecase.Create(ctx, ticket); err != nil {
-		s.Log.WithError(err).Error("failed to create ticket")
+	if err := s.OrderUsecase.Create(ctx, order); err != nil {
+		s.Log.WithError(err).Error("failed to create order")
 	}
 }

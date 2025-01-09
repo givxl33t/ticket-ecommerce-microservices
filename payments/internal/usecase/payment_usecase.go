@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	"ticketing/payments/internal/common/exception"
 	"ticketing/payments/internal/domain"
+	"ticketing/payments/internal/infrastructure"
 	"ticketing/payments/internal/model"
 	"ticketing/payments/internal/publisher"
 	"ticketing/payments/internal/repository"
@@ -12,8 +12,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"github.com/stripe/stripe-go/v74"
-	"github.com/stripe/stripe-go/v74/paymentintent"
 )
 
 type PaymentUsecase interface {
@@ -23,17 +21,19 @@ type PaymentUsecase interface {
 type PaymentUsecaseImpl struct {
 	PaymentRepository repository.PaymentRepository
 	PaymentPublisher  publisher.PaymentPublisher
+	PaymentGateway    infrastructure.PaymentGateway
 	OrderRepository   repository.OrderRepository
 	Logger            *logrus.Logger
 	Validate          *validator.Validate
 	Config            *viper.Viper
 }
 
-func NewPaymentUsecase(paymentRepo repository.PaymentRepository, paymentPublisher publisher.PaymentPublisher,
+func NewPaymentUsecase(paymentRepo repository.PaymentRepository, paymentPublisher publisher.PaymentPublisher, paymentGateway infrastructure.PaymentGateway,
 	orderRepo repository.OrderRepository, log *logrus.Logger, validate *validator.Validate, config *viper.Viper) PaymentUsecase {
 	return &PaymentUsecaseImpl{
 		PaymentRepository: paymentRepo,
 		PaymentPublisher:  paymentPublisher,
+		PaymentGateway:    paymentGateway,
 		OrderRepository:   orderRepo,
 		Logger:            log,
 		Validate:          validate,
@@ -63,30 +63,15 @@ func (uc *PaymentUsecaseImpl) Create(ctx context.Context, request *model.Payment
 		return nil, exception.ErrOrderNotFound
 	}
 
-	// stripe logic shouldnt be here, but as of right now
-	// we would like make it work first
-	stripe.Key = uc.Config.GetString("STRIPE_KEY")
-	intentParams := &stripe.PaymentIntentParams{
-		Amount:             stripe.Int64(order.Price),
-		Currency:           stripe.String("usd"),
-		Description:        stripe.String(fmt.Sprintf("Ticket for %d", order.ID)),
-		PaymentMethodTypes: stripe.StringSlice([]string{"card"}),
-		Params: stripe.Params{
-			Metadata: map[string]string{
-				"order_id": fmt.Sprintf("%d", order.ID),
-			},
-		},
-	}
-
-	paymentIntent, err := paymentintent.New(intentParams)
+	createPayment, err := uc.PaymentGateway.CreatePayment(order)
 	if err != nil {
 		uc.Logger.WithError(err).Error("failed create payment intent")
-		return nil, exception.ErrInternalServerError
+		return nil, exception.ErrPaymentFailed
 	}
 
 	payment := new(domain.Payment)
 	payment.OrderID = request.OrderID
-	payment.StripeID = paymentIntent.ClientSecret
+	payment.StripeID = createPayment.ClientSecret
 	if err := uc.PaymentRepository.Create(ctx, payment); err != nil {
 		uc.Logger.WithError(err).Error("failed create payment to database")
 		return nil, exception.ErrInternalServerError

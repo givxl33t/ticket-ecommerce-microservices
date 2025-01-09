@@ -13,7 +13,8 @@ ENV_LOCAL_TEST=\
 				POOL_LIFETIME=3000 \
 				LOG_LEVEL=2 \
 				JWT_SECRET_KEY=secretkey \
-				NATS_URL=http://localhost:4222
+				NATS_URL=http://localhost:4222 \
+				STRIPE_KEY=sk_test_51NuxwkEPFj7I6FUPMJqh9CQ6Woc8Rm5bSvYpMT6zCBISCVz3XLLQg9BFtUvPh5qqm6kosy5FaWo89JqFBaAsz31T00KI1CX9ke
 
 build:
 				go build -o fiber-app ./cmd/web

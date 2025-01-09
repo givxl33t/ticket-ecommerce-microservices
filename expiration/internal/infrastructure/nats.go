@@ -19,8 +19,10 @@ func NewNATS(config *viper.Viper) *nats.Conn {
 	// singleton connection
 	once.Do(func() {
 		natsURL := config.GetString("NATS_URL")
+		maxRetries := 10
 
-		natsInstance, err = nats.Connect(natsURL)
+		// test retry logic due to its heavy reliance
+		natsInstance, err = nats.Connect(natsURL, nats.RetryOnFailedConnect(true), nats.MaxReconnects(maxRetries))
 
 		if err != nil {
 			panic(fmt.Errorf("failed to connect to NATS: %v", err))

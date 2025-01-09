@@ -7,10 +7,6 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
-type Event interface {
-	Subject() string
-}
-
 type Listener struct {
 	Subject       string
 	QueueGroup    string

@@ -13,6 +13,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"github.com/stripe/stripe-go/v74"
 	"go.uber.org/mock/gomock"
 )
 
@@ -25,32 +26,33 @@ func TestCreatePayment(t *testing.T) {
 	orderRepository := mocks.NewMockOrderRepository(ctrl)
 	paymentRepository := mocks.NewMockPaymentRepository(ctrl)
 	paymentPublisher := mocks.NewMockPaymentPublisher(ctrl)
-	paymentUsecase := usecase.NewPaymentUsecase(paymentRepository, paymentPublisher, orderRepository, logrus.New(), validator.New(), config.New())
+	paymentGateway := mocks.NewMockPaymentGateway(ctrl)
+	paymentUsecase := usecase.NewPaymentUsecase(paymentRepository, paymentPublisher, paymentGateway, orderRepository, logrus.New(), validator.New(), config.New())
 
 	t.Run("success", func(t *testing.T) {
-		orderRepository.EXPECT().Create(ctx, gomock.Any()).Return(nil)
-		paymentRepository.EXPECT().FindById(ctx, gomock.Any()).Return(&domain.Ticket{
-			ID: 1, // Manually set the return value for mocks??
+		orderRepository.EXPECT().FindById(ctx, gomock.Any()).Return(&domain.Order{
+			ID:     1,
+			UserID: "user-1",
 		}, nil)
-		orderRepository.EXPECT().IsTicketReserved(ctx, gomock.Any()).Return(false, nil)
+		paymentRepository.EXPECT().Create(ctx, gomock.Any()).Return(nil)
 		paymentPublisher.EXPECT().Created(gomock.Any()).Return(nil)
+		paymentGateway.EXPECT().CreatePayment(gomock.Any()).Return(&stripe.PaymentIntent{
+			ClientSecret: "client-secret",
+		}, nil)
 
-		request := &model.CreateOrderRequest{
-			TicketID: 1,
-			UserID:   "user-1",
+		request := &model.PaymentRequest{
+			UserID:  "user-1",
+			OrderID: 1,
 		}
 
-		response, err := paymentUsecase.Create(ctx, request)
-
+		_, err := paymentUsecase.Create(ctx, request)
 		assert.NoError(t, err)
-		assert.Equal(t, request.TicketID, response.Ticket.ID)
-		assert.Equal(t, request.UserID, response.UserID)
 	})
 
 	t.Run("failed validation", func(t *testing.T) {
-		request := &model.CreateOrderRequest{
-			TicketID: 0,
-			UserID:   "",
+		request := &model.PaymentRequest{
+			UserID:  "",
+			OrderID: 0,
 		}
 
 		_, err := paymentUsecase.Create(ctx, request)
