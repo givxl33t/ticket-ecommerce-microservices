@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import useRequest from "@/hooks/useRequest";
@@ -12,14 +12,19 @@ export default function NewTicket() {
   const { doRequest, errors } = useRequest({
     url: "/api/tickets",
     method: "post",
-    body: { title, price },
+    body: { 
+      title, 
+      //  we are dealing with statically typed languages,
+      //  so we need to cast the price to a number
+      price: Number(price)
+    },
     onSuccess: () => {
       router.push("/");
       router.refresh();
     }
   });
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     doRequest();
   };
@@ -36,7 +41,7 @@ export default function NewTicket() {
     <Container maxWidth="sm">
       <Box
         component="form"
-        onSubmit={onSubmit}
+        onSubmit={handleSubmit}
         sx={{
           mt: 4,
           p: 3,
@@ -53,6 +58,7 @@ export default function NewTicket() {
         </Typography>
 
         <TextField
+          name="title"
           label="Title"
           variant="outlined"
           fullWidth
@@ -62,6 +68,7 @@ export default function NewTicket() {
         />
 
         <TextField
+          name="price"
           label="Price"
           variant="outlined"
           fullWidth

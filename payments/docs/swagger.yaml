@@ -1,0 +1,58 @@
+basePath: /api
+definitions:
+  model.PaymentRequest:
+    properties:
+      order_id:
+        type: integer
+      user_id:
+        type: string
+    required:
+    - order_id
+    - user_id
+    type: object
+  model.PaymentResponse:
+    properties:
+      id:
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: fiber@swagger.io
+    name: API Support
+  description: Payments Service HTTP API Docs
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Payments Service
+  version: "1.0"
+paths:
+  /payments:
+    post:
+      consumes:
+      - application/json
+      description: Create a new payment.
+      parameters:
+      - description: Payment Create Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.PaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.PaymentResponse'
+      summary: Create Payment
+      tags:
+      - payments
+securityDefinitions:
+  Session:
+    in: header
+    name: Cookie
+    type: apiKey
+swagger: "2.0"

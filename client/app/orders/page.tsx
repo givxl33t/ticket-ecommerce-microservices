@@ -11,7 +11,7 @@ export interface IOrder {
     price: number;
   };
   status: string;
-  expiresAt: string;
+  expires_at: number;
 }
 
 export default async function Orders() {

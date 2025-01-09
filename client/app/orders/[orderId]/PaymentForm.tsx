@@ -18,7 +18,7 @@ export default function PaymentForm({ order }: { order: IOrder }) {
     url: "/api/payments",
     method: "post",
     body: {
-      orderId: order.id,
+      order_id: order.id,
     },
     onSuccess: () => {
       router.push("/orders");

@@ -23,9 +23,9 @@ spec:
             - name: JWT_SECRET_KEY
               value: 'asdfasdf'
             - name: DB_USER
-              value: 'testuser'
+              value: 'root'
             - name: DB_PASSWORD
-              value: 'testpassword'
+              value: ''
             - name: DB_HOST
               value: 'tickets-mysql-srv'
             - name: DB_PORT

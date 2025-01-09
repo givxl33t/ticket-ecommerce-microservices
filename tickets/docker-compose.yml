@@ -3,7 +3,7 @@ version: '3.9'
 services:
   ticketing_tickets:
     container_name: ticketing_tickets
-    image: romenzonez/ticketing-tickets:latest
+    image: romenzonez/ticketing-tickets:dev
     restart: always
     ports:
       - 3001:3000

@@ -7,6 +7,7 @@ import (
 	"ticketing/orders/internal/common/event"
 	"ticketing/orders/internal/domain"
 	"ticketing/orders/internal/model"
+	"ticketing/orders/internal/repository"
 	"ticketing/orders/internal/usecase"
 	"time"
 
@@ -19,18 +20,20 @@ const (
 )
 
 type OrderListener struct {
-	OrderUsecase  usecase.OrderUsecase
-	TicketUsecase usecase.TicketUsecase
-	NatsConn      *nats.Conn
-	Logger        *logrus.Logger
+	OrderUsecase    usecase.OrderUsecase
+	OrderRepository repository.OrderRepository
+	TicketUsecase   usecase.TicketUsecase
+	NatsConn        *nats.Conn
+	Logger          *logrus.Logger
 }
 
-func NewOrderListener(orderUseCase usecase.OrderUsecase, ticketUseCase usecase.TicketUsecase, conn *nats.Conn, log *logrus.Logger) *OrderListener {
+func NewOrderListener(orderUseCase usecase.OrderUsecase, orderRepository repository.OrderRepository, ticketUseCase usecase.TicketUsecase, conn *nats.Conn, log *logrus.Logger) *OrderListener {
 	return &OrderListener{
-		OrderUsecase:  orderUseCase,
-		TicketUsecase: ticketUseCase,
-		NatsConn:      conn,
-		Logger:        log,
+		OrderUsecase:    orderUseCase,
+		OrderRepository: orderRepository,
+		TicketUsecase:   ticketUseCase,
+		NatsConn:        conn,
+		Logger:          log,
 	}
 }
 
@@ -45,6 +48,19 @@ func (ol *OrderListener) HandleExpirationComplete(data []byte) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
+	// Direct repository access is used here because this operation does involve the user context
+	// and creating a specialized use case would add unnecessary complexity for a single use case.
+	order, err := ol.OrderRepository.FindById(ctx, event.OrderID)
+	if err != nil {
+		ol.Logger.WithError(err).Error("failed to find order by id")
+		return err
+	}
+
+	// if order is already completed, do nothing
+	if order.Status == domain.Complete {
+		return nil
+	}
 
 	updateOrderRequest := new(model.UpdateOrderStatusRequest)
 	updateOrderRequest.ID = event.OrderID
@@ -65,7 +81,7 @@ func (ol *OrderListener) HandlePaymentCreated(data []byte) error {
 		return err
 	}
 
-	log.Printf("Processing OrderCancelledEvent: %v\n", event)
+	log.Printf("Processing PaymentCreatedEvent: %v\n", event)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

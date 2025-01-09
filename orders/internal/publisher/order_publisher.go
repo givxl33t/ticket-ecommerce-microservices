@@ -29,10 +29,8 @@ func (p *OrderPublisherImpl) Created(order *domain.Order) error {
 		ID:        order.ID,
 		Status:    order.Status,
 		UserID:    order.UserID,
-		TicketID:  order.TicketID,
+		Ticket:    order.Ticket,
 		ExpiresAt: order.ExpiresAt,
-		CreatedAt: order.CreatedAt,
-		UpdatedAt: order.UpdatedAt,
 	}
 
 	data, err := json.Marshal(message)

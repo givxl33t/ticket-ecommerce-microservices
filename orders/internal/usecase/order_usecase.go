@@ -74,7 +74,7 @@ func (uc *OrderUsecaseImpl) Create(ctx context.Context, request *model.CreateOrd
 	order.UserID = request.UserID
 	order.TicketID = request.TicketID
 	order.Status = domain.Created
-	order.ExpiresAt = expiration.Unix()
+	order.ExpiresAt = expiration.UnixMilli()
 	order.Ticket = *ticket
 
 	if err := uc.OrderRepository.Create(ctx, order); err != nil {

@@ -11,7 +11,7 @@ export default function TicketShow({ ticket }: { ticket: ITicket }) {
   const { doRequest, errors } = useRequest({
     url: "/api/orders",
     method: "post",
-    body: { ticketId: ticket.id },
+    body: { ticket_id: ticket.id },
     onSuccess: (order: any) => {
       router.push(`/orders/${order.id}`);
     },

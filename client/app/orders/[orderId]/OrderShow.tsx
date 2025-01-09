@@ -16,7 +16,7 @@ export default function OrderShow({ order }: { order: IOrder }) {
 
   useEffect(() => {
     const findTimeLeft = () => {
-      const msLeft = new Date(order.expiresAt).getTime() - new Date().getTime();
+      const msLeft = new Date(order.expires_at).getTime() - new Date().getTime();
       setTimeLeft(Math.round(msLeft / 1000));
     };
 

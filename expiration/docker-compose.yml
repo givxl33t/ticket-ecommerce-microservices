@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+  ticketing_expiration:
+    container_name: ticketing_expiration
+    image: romenzonez/ticketing-expiration:latest
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      expiration_redis_server:
+        condition: service_healthy
+      expiration_nats_server:
+        condition: service_healthy
+    env_file:
+      - .env.docker
+
+  expiration_redis_server:
+    container_name: expiration_redis_server
+    image: redis
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  expiration_nats_server:
+    container_name: expiration_nats_server
+    image: nats:latest
+    ports:
+      - 4222:4222
+    healthcheck:
+      test: ["CMD", "nats-server", "--version"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+
