@@ -36,7 +36,6 @@ func main() {
 	// Infrastructure setup
 	app := infrastructure.NewFiber(config)
 	port := config.Get("APP_PORT")
-	stripeKey := config.GetString("STRIPE_KEY")
 	db := infrastructure.NewGorm(config)
 	natsConn := infrastructure.NewNATS(config)
 	logger := infrastructure.NewLogger(config)
@@ -49,7 +48,7 @@ func main() {
 	orderRepository := repository.NewOrderRepository(db)
 	paymentRepository := repository.NewPaymentRepository(db)
 	paymentPublisher := publisher.NewPaymentPublisher(natsConn)
-	paymentGateway := infrastructure.NewStripe(stripeKey)
+	paymentGateway := infrastructure.NewStripe(config)
 	paymentUsecase := usecase.NewPaymentUsecase(paymentRepository, paymentPublisher, paymentGateway, orderRepository, logger, validate, config)
 	paymentHandler := handler.NewPaymentHandler(paymentUsecase, logger)
 	orderUsecase := usecase.NewOrderUsecase(orderRepository, logger, validate, config)

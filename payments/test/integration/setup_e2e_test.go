@@ -33,6 +33,7 @@ type e2eTestSuite struct {
 	OrderRepository   repository.OrderRepository
 	PaymentRepository repository.PaymentRepository
 	PaymentPublisher  publisher.PaymentPublisher
+	PaymentGateway    infrastructure.PaymentGateway
 	PaymentUsecase    usecase.PaymentUsecase
 	PaymentHandler    *handler.PaymentHandler
 	OrderUsecase      usecase.OrderUsecase
@@ -48,11 +49,14 @@ func (s *e2eTestSuite) SetupSuite() {
 	s.DB = infrastructure.NewGorm(s.Config)
 	s.NATS = infrastructure.NewNATS(s.Config)
 	s.Log = infrastructure.NewLogger(s.Config)
+	s.App = infrastructure.NewFiber(s.Config)
+	s.Validate = infrastructure.NewValidator(s.Config)
 	s.OrderRepository = repository.NewOrderRepository(s.DB)
 	s.PaymentRepository = repository.NewPaymentRepository(s.DB)
 	s.PaymentPublisher = publisher.NewPaymentPublisher(s.NATS)
+	s.PaymentGateway = infrastructure.NewStripe(s.Config)
 	s.OrderUsecase = usecase.NewOrderUsecase(s.OrderRepository, s.Log, s.Validate, s.Config)
-	s.PaymentUsecase = usecase.NewPaymentUsecase(s.PaymentRepository, s.PaymentPublisher, s.OrderRepository, s.Log, s.Validate, s.Config)
+	s.PaymentUsecase = usecase.NewPaymentUsecase(s.PaymentRepository, s.PaymentPublisher, s.PaymentGateway, s.OrderRepository, s.Log, s.Validate, s.Config)
 	s.PaymentHandler = handler.NewPaymentHandler(s.PaymentUsecase, s.Log)
 	s.AuthMiddleware = middleware.NewAuth(s.Log, s.Config)
 	route.RegisterRoute(s.App, s.PaymentHandler, s.AuthMiddleware)
@@ -63,5 +67,5 @@ func (s *e2eTestSuite) SetupTest() {
 }
 
 func (s *e2eTestSuite) TearDownTest() {
-	s.Require().NoError(s.DB.Migrator().DropTable("tickets", "payments"))
+	s.Require().NoError(s.DB.Migrator().DropTable("orders", "payments"))
 }

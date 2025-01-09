@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"ticketing/payments/internal/domain"
 
+	"github.com/spf13/viper"
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/paymentintent"
 )
@@ -13,17 +14,17 @@ type PaymentGateway interface {
 }
 
 type PaymentGatewayImpl struct {
-	APIKey string
+	Config *viper.Viper
 }
 
-func NewStripe(apiKey string) PaymentGateway {
+func NewStripe(config *viper.Viper) PaymentGateway {
 	return &PaymentGatewayImpl{
-		APIKey: apiKey,
+		Config: config,
 	}
 }
 
 func (pi *PaymentGatewayImpl) CreatePayment(order *domain.Order) (*stripe.PaymentIntent, error) {
-	stripe.Key = pi.APIKey
+	stripe.Key = pi.Config.GetString("STRIPE_KEY")
 	intentParams := &stripe.PaymentIntentParams{
 		Amount:             stripe.Int64(order.Price),
 		Currency:           stripe.String("usd"),

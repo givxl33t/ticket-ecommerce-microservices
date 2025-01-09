@@ -18,12 +18,13 @@ func (s *e2eTestSuite) TestPaymentCreatedSuccess() {
 	s.CreateDummyOrder(
 		1,
 		"created",
-		"adsasdasdas",
+		"user-1",
 		1000,
 	)
 
-	requestBody := &model.CreateOrderRequest{
-		TicketID: 1,
+	requestBody := &model.PaymentRequest{
+		UserID:  "user-1",
+		OrderID: 1,
 	}
 
 	bodyJSON, err := json.Marshal(requestBody)
@@ -46,16 +47,15 @@ func (s *e2eTestSuite) TestPaymentCreatedSuccess() {
 	bytes, err := io.ReadAll(response.Body)
 	s.Assert().NoError(err)
 
-	responseBody := new(model.OrderResponse)
+	responseBody := new(model.PaymentResponse)
 	err = json.Unmarshal(bytes, responseBody)
 	s.Assert().NoError(err)
-
-	s.Assert().Equal(requestBody.TicketID, responseBody.Ticket.ID)
 }
 
 func (s *e2eTestSuite) TestOrderCreatedFailedValidation() {
 	requestBody := &model.CreateOrderRequest{
-		TicketID: 0,
+		UserID: "",
+		Price:  0,
 	}
 
 	bodyJSON, err := json.Marshal(requestBody)
@@ -87,7 +87,7 @@ func (s *e2eTestSuite) TestOrderCreatedFailedValidation() {
 // generate jwt with predefined claims
 func (s *e2eTestSuite) GenerateUserToken() string {
 	claims := jwt.MapClaims{
-		"id":    "asdasddsaads",
+		"id":    "user-1",
 		"email": "JlKk2@example.com",
 	}
 

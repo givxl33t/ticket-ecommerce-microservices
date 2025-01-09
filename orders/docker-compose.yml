@@ -3,7 +3,7 @@ version: '3.9'
 services:
   ticketing_orders:
     container_name: ticketing_orders
-    image: romenzonez/ticketing-orders:latest
+    image: romenzonez/ticketing-orders:dev
     restart: always
     ports:
       - 3001:3000
@@ -54,7 +54,7 @@ services:
       - ./database/migrations:/migrations
     command: [
       "-path", "/migrations",
-      "-database", "mysql://testuser:testpassword@tcp(orders_mysql:3306)/tickets",
+      "-database", "mysql://testuser:testpassword@tcp(orders_mysql:3306)/orders",
       "up"
     ]
 
