@@ -23,7 +23,7 @@ The application architecture consists of the following components:
 
 ### Auth Service
 - **Stack**: ElysiaJS (Bun) with MongoDB.
-- **Purpose**: Handles user authentication and authorization.
+- **Purpose**: Handles user JWT authentication and authorization.
 - **Reasoning**: 
   - MongoDB's schema-less nature is ideal for dynamic user data.
   - JWT tokens provide scalable and stateless authentication.
@@ -44,7 +44,7 @@ The application architecture consists of the following components:
 
 ### Payments Service
 - **Stack**: Fiber (Go) with MySQL.
-- **Purpose**: Manages ticket data (creation, updates, and reservations).
+- **Purpose**: Manages payment data and handle Stripe payment integration.
 - **Reasoning**: 
   - The lightweight Fiber ensures quick response times.
   - MySQL ensures persistence and consistency of payment records.
@@ -103,6 +103,3 @@ cd ticketing-ecommerce-microservices
 skaffold start
 ```
 Note: The application will be available at `http://ticketing.dev` only after the application is started. To bypass untrusted kubernetes certificates, you can just type `thisisunsafe` on the browser.
-
-## Contributing
-Contributions are welcome!
