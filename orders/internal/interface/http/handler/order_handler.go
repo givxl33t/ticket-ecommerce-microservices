@@ -28,6 +28,7 @@ func NewOrderHandler(orderUsecase usecase.OrderUsecase, log *logrus.Logger) *Ord
 // @Accept json
 // @Produce json
 // @Success 200 {object} []model.OrderResponse
+// @Security Session
 // @Router /orders [get]
 func (h *OrderHandler) GetAll(c *fiber.Ctx) error {
 	auth := c.Locals("auth").(*model.AccessTokenPayload)
@@ -49,6 +50,7 @@ func (h *OrderHandler) GetAll(c *fiber.Ctx) error {
 // @Produce json
 // @Param request body model.CreateOrderRequest true "Order Create Request"
 // @Success 201 {object} model.OrderResponse
+// @Security Session
 // @Router /orders [post]
 func (h *OrderHandler) Create(c *fiber.Ctx) error {
 	createOrderRequest := new(model.CreateOrderRequest)
@@ -79,6 +81,7 @@ func (h *OrderHandler) Create(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "Order ID"
 // @Success 200 {object} model.OrderResponse
+// @Security Session
 // @Router /orders/{id} [get]
 func (h *OrderHandler) GetByID(c *fiber.Ctx) error {
 	authenticatedOrderRequest := new(model.AuthenticatedOrderRequest)
@@ -114,6 +117,7 @@ func (h *OrderHandler) GetByID(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "Order ID"
 // @Success 204
+// @Security Session
 // @Router /orders/{id} [delete]
 func (h *OrderHandler) Cancel(c *fiber.Ctx) error {
 	authenticatedOrderRequest := new(model.AuthenticatedOrderRequest)

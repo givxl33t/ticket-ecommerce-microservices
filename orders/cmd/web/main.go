@@ -19,7 +19,7 @@ import (
 
 // @title Orders Service
 // @version 1.0
-// @description Tickets Service HTTP API Docs
+// @description Orders Service HTTP API Docs
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
 // @contact.email fiber@swagger.io

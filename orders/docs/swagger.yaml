@@ -1,73 +1,59 @@
-basePath: /api/v1
+basePath: /api
 definitions:
-  model.CreateTicketRequest:
+  model.CreateOrderRequest:
     properties:
-      price:
+      ticket_id:
         type: integer
-      title:
-        maxLength: 100
-        type: string
       user_id:
         type: string
     required:
-    - price
-    - title
+    - ticket_id
     - user_id
     type: object
-  model.TicketResponse:
+  model.OrderResponse:
     properties:
       created_at:
         type: integer
+      expires_at:
+        type: integer
       id:
         type: integer
-      order_id:
-        type: integer
-      price:
-        type: integer
-      title:
+      status:
         type: string
+      ticket:
+        $ref: '#/definitions/model.TicketResponse'
       updated_at:
         type: integer
       user_id:
         type: string
     type: object
-  model.UpdateTicketRequest:
+  model.TicketResponse:
     properties:
       id:
-        type: integer
-      order_id:
         type: integer
       price:
         type: integer
       title:
-        maxLength: 100
         type: string
-      user_id:
-        type: string
-    required:
-    - id
-    - price
-    - title
-    - user_id
     type: object
 host: localhost:3000
 info:
   contact:
     email: fiber@swagger.io
     name: API Support
-  description: Tickets Service HTTP API Docs
+  description: Orders Service HTTP API Docs
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: Tickets Service
+  title: Orders Service
   version: "1.0"
 paths:
-  /tickets:
+  /orders:
     get:
       consumes:
       - application/json
-      description: Fetches all ticket data.
+      description: Fetches all order data.
       produces:
       - application/json
       responses:
@@ -75,37 +61,59 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.TicketResponse'
+              $ref: '#/definitions/model.OrderResponse'
             type: array
-      summary: Get All Tickets
+      security:
+      - Session: []
+      summary: Get All Orders
       tags:
-      - Tickets
+      - Orders
     post:
       consumes:
       - application/json
-      description: Create a new ticket.
+      description: Create a new order.
       parameters:
-      - description: Ticket Create Request
+      - description: Order Create Request
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/model.CreateTicketRequest'
+          $ref: '#/definitions/model.CreateOrderRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/model.TicketResponse'
-      summary: Create Ticket
+            $ref: '#/definitions/model.OrderResponse'
+      security:
+      - Session: []
+      summary: Create Order
       tags:
-      - Tickets
-  /tickets/{id}:
+      - Orders
+  /orders/{id}:
+    delete:
+      description: a order by id.
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - Session: []
+      summary: Cancels A Order
+      tags:
+      - Orders
     get:
-      description: Fetches a ticket by id.
+      description: Fetches a order by id.
       parameters:
-      - description: Ticket ID
+      - description: Order ID
         in: path
         name: id
         required: true
@@ -116,36 +124,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.TicketResponse'
-      summary: Get A Ticket
+            $ref: '#/definitions/model.OrderResponse'
+      security:
+      - Session: []
+      summary: Get A Order
       tags:
-      - Tickets
-    put:
-      consumes:
-      - application/json
-      description: Updates a ticket data by id.
-      parameters:
-      - description: Ticket Update Request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/model.UpdateTicketRequest'
-      - description: Ticket ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.TicketResponse'
-      summary: Update A Ticket
-      tags:
-      - Tickets
+      - Orders
 securityDefinitions:
   Session:
     in: header

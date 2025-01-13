@@ -9,7 +9,9 @@ COPY . .
 
 FROM common-build-stage AS development-build-stage
 
-CMD ["go", "run", "./cmd/web/main.go"]
+RUN go install github.com/air-verse/air@latest
+
+CMD ["air", "-c", ".air.toml"]
 
 FROM common-build-stage AS production-build-stage
 

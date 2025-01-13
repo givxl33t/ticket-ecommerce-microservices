@@ -49,6 +49,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ],
                 "description": "Create a new ticket.",
                 "consumes": [
                     "application/json"
@@ -110,6 +115,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ],
                 "description": "Updates a ticket data by id.",
                 "consumes": [
                     "application/json"
@@ -200,10 +210,7 @@ const docTemplate = `{
         "model.UpdateTicketRequest": {
             "type": "object",
             "required": [
-                "id",
-                "price",
-                "title",
-                "user_id"
+                "id"
             ],
             "properties": {
                 "id": {
@@ -216,8 +223,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "title": {
-                    "type": "string",
-                    "maxLength": 100
+                    "type": "string"
                 },
                 "user_id": {
                     "type": "string"

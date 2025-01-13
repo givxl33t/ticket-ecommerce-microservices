@@ -49,6 +49,7 @@ func (h *TicketHandler) GetAll(c *fiber.Ctx) error {
 // @Produce json
 // @Param request body model.CreateTicketRequest true "Ticket Create Request"
 // @Success 201 {object} model.TicketResponse
+// @Security Session
 // @Router /tickets [post]
 func (h *TicketHandler) Create(c *fiber.Ctx) error {
 	createTicketRequest := new(model.CreateTicketRequest)
@@ -112,6 +113,7 @@ func (h *TicketHandler) GetByID(c *fiber.Ctx) error {
 // @Param request body model.UpdateTicketRequest true "Ticket Update Request"
 // @Param id path int true "Ticket ID"
 // @Success 200 {object} model.TicketResponse
+// @Security Session
 // @Router /tickets/{id} [put]
 func (h *TicketHandler) Update(c *fiber.Ctx) error {
 	updateTicketRequest := new(model.UpdateTicketRequest)

@@ -23,9 +23,14 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/tickets": {
+        "/orders": {
             "get": {
-                "description": "Fetches all ticket data.",
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ],
+                "description": "Fetches all order data.",
                 "consumes": [
                     "application/json"
                 ],
@@ -33,23 +38,28 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Tickets"
+                    "Orders"
                 ],
-                "summary": "Get All Tickets",
+                "summary": "Get All Orders",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.TicketResponse"
+                                "$ref": "#/definitions/model.OrderResponse"
                             }
                         }
                     }
                 }
             },
             "post": {
-                "description": "Create a new ticket.",
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ],
+                "description": "Create a new order.",
                 "consumes": [
                     "application/json"
                 ],
@@ -57,17 +67,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Tickets"
+                    "Orders"
                 ],
-                "summary": "Create Ticket",
+                "summary": "Create Order",
                 "parameters": [
                     {
-                        "description": "Ticket Create Request",
+                        "description": "Order Create Request",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.CreateTicketRequest"
+                            "$ref": "#/definitions/model.CreateOrderRequest"
                         }
                     }
                 ],
@@ -75,26 +85,31 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/model.TicketResponse"
+                            "$ref": "#/definitions/model.OrderResponse"
                         }
                     }
                 }
             }
         },
-        "/tickets/{id}": {
+        "/orders/{id}": {
             "get": {
-                "description": "Fetches a ticket by id.",
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ],
+                "description": "Fetches a order by id.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Tickets"
+                    "Orders"
                 ],
-                "summary": "Get A Ticket",
+                "summary": "Get A Order",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Ticket ID",
+                        "description": "Order ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -104,90 +119,75 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.TicketResponse"
+                            "$ref": "#/definitions/model.OrderResponse"
                         }
                     }
                 }
             },
-            "put": {
-                "description": "Updates a ticket data by id.",
-                "consumes": [
-                    "application/json"
+            "delete": {
+                "security": [
+                    {
+                        "Session": []
+                    }
                 ],
+                "description": "a order by id.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Tickets"
+                    "Orders"
                 ],
-                "summary": "Update A Ticket",
+                "summary": "Cancels A Order",
                 "parameters": [
                     {
-                        "description": "Ticket Update Request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.UpdateTicketRequest"
-                        }
-                    },
-                    {
                         "type": "integer",
-                        "description": "Ticket ID",
+                        "description": "Order ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.TicketResponse"
-                        }
+                    "204": {
+                        "description": "No Content"
                     }
                 }
             }
         }
     },
     "definitions": {
-        "model.CreateTicketRequest": {
+        "model.CreateOrderRequest": {
             "type": "object",
             "required": [
-                "price",
-                "title",
+                "ticket_id",
                 "user_id"
             ],
             "properties": {
-                "price": {
+                "ticket_id": {
                     "type": "integer"
-                },
-                "title": {
-                    "type": "string",
-                    "maxLength": 100
                 },
                 "user_id": {
                     "type": "string"
                 }
             }
         },
-        "model.TicketResponse": {
+        "model.OrderResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
                     "type": "integer"
                 },
+                "expires_at": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
                 },
-                "order_id": {
-                    "type": "integer"
-                },
-                "price": {
-                    "type": "integer"
-                },
-                "title": {
+                "status": {
                     "type": "string"
+                },
+                "ticket": {
+                    "$ref": "#/definitions/model.TicketResponse"
                 },
                 "updated_at": {
                     "type": "integer"
@@ -197,29 +197,16 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UpdateTicketRequest": {
+        "model.TicketResponse": {
             "type": "object",
-            "required": [
-                "id",
-                "price",
-                "title",
-                "user_id"
-            ],
             "properties": {
                 "id": {
-                    "type": "integer"
-                },
-                "order_id": {
                     "type": "integer"
                 },
                 "price": {
                     "type": "integer"
                 },
                 "title": {
-                    "type": "string",
-                    "maxLength": 100
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -238,10 +225,10 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:3000",
-	BasePath:         "/api/v1",
+	BasePath:         "/api",
 	Schemes:          []string{},
-	Title:            "Tickets Service",
-	Description:      "Tickets Service HTTP API Docs",
+	Title:            "Orders Service",
+	Description:      "Orders Service HTTP API Docs",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

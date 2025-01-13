@@ -47,6 +47,8 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/model.PaymentResponse'
+      security:
+      - Session: []
       summary: Create Payment
       tags:
       - payments

@@ -40,15 +40,11 @@ definitions:
       price:
         type: integer
       title:
-        maxLength: 100
         type: string
       user_id:
         type: string
     required:
     - id
-    - price
-    - title
-    - user_id
     type: object
 host: localhost:3000
 info:
@@ -98,6 +94,8 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/model.TicketResponse'
+      security:
+      - Session: []
       summary: Create Ticket
       tags:
       - Tickets
@@ -143,6 +141,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.TicketResponse'
+      security:
+      - Session: []
       summary: Update A Ticket
       tags:
       - Tickets

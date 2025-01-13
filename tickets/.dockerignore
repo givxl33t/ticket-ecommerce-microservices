@@ -10,4 +10,5 @@ LICENSE
 # Folders
 .git/
 .github/
-build/
+tmp/
+test/
