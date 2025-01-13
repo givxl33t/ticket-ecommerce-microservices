@@ -15,7 +15,7 @@ import (
 func (s *e2eTestSuite) TestTicketCreatedSuccess() {
 	requestBody := &model.CreateTicketRequest{
 		Title: "concert",
-		Price: 39,
+		Price: 3242,
 	}
 
 	bodyJSON, err := json.Marshal(requestBody)

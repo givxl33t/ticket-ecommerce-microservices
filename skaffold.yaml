@@ -32,31 +32,35 @@ build:
       context: tickets
       docker:
         dockerfile: Dockerfile
+        target: development-build-stage
       sync:
         manual:
-          - src: 'src/**/*.ts'
+          - src: '**/*.go'
             dest: .
     - image: romenzonez/ticketing-orders
       context: orders
       docker:
         dockerfile: Dockerfile
+        target: development-build-stage
       sync:
         manual:
-          - src: 'src/**/*.ts'
+          - src: '**/*.go'
             dest: .
     - image: romenzonez/ticketing-expiration
       context: expiration
       docker:
         dockerfile: Dockerfile
+        target: development-build-stage
       sync:
         manual:
-          - src: 'src/**/*.ts'
+          - src: '**/*.go' 
             dest: .
     - image: romenzonez/ticketing-payments
       context: payments
       docker:
         dockerfile: Dockerfile
+        target: development-build-stage
       sync:
         manual:
-          - src: 'src/**/*.ts'
+          - src: '**/*.go' 
             dest: .

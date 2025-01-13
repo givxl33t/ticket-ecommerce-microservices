@@ -9,11 +9,13 @@ COPY . .
 
 FROM common-build-stage AS development-build-stage
 
-CMD ["go", "run", "./cmd/web/main.go"]
+RUN go install github.com/air-verse/air@latest
+
+CMD ["air", "-c", ".air.toml"]
 
 FROM common-build-stage AS production-build-stage
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o fiber-app ./cmd/web
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o fiber-app ./cmd/worker
 
 FROM gcr.io/distroless/static:nonroot AS production-runtime-stage
 

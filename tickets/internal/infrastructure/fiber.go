@@ -23,7 +23,7 @@ func NewFiber(config *viper.Viper) *fiber.App {
 	})
 
 	app.Get("/api/tickets/swagger/*", swagger.HandlerDefault)
-	fmt.Println("Swagger UI available at /api/tickets/swagger/")
+	fmt.Println("Swagger UI is available at /api/tickets/swagger/")
 
 	app.Use(recover.New())
 

@@ -31,7 +31,7 @@ func TestCreateTicket(t *testing.T) {
 
 		request := &model.CreateTicketRequest{
 			Title:  "concert",
-			Price:  2000,
+			Price:  30000,
 			UserID: "user-1",
 		}
 
