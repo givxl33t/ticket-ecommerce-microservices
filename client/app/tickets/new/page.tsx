@@ -70,6 +70,7 @@ export default function NewTicket() {
         <TextField
           name="price"
           label="Price"
+          type="number"
           variant="outlined"
           fullWidth
           value={price}
