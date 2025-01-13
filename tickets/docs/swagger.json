@@ -43,6 +43,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ],
                 "description": "Create a new ticket.",
                 "consumes": [
                     "application/json"
@@ -104,6 +109,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ],
                 "description": "Updates a ticket data by id.",
                 "consumes": [
                     "application/json"
@@ -194,10 +204,7 @@
         "model.UpdateTicketRequest": {
             "type": "object",
             "required": [
-                "id",
-                "price",
-                "title",
-                "user_id"
+                "id"
             ],
             "properties": {
                 "id": {
@@ -210,8 +217,7 @@
                     "type": "integer"
                 },
                 "title": {
-                    "type": "string",
-                    "maxLength": 100
+                    "type": "string"
                 },
                 "user_id": {
                     "type": "string"

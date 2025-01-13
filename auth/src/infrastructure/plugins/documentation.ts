@@ -6,7 +6,7 @@ const swaggerConfig = swagger({
   scalarConfig: {
     servers: ["/"],
   },
-  path: "/documentation",
+  path: "/api/users/swagger",
   documentation: {
     info: {
       title: "Bun Elysia Sandbox API Docs",

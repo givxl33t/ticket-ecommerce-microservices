@@ -22,8 +22,8 @@ func NewFiber(config *viper.Viper) *fiber.App {
 		ReadTimeout:  config.GetDuration("APP_TIMEOUT") * time.Second,
 	})
 
-	app.Get("/swagger/*", swagger.HandlerDefault)
-	fmt.Println("Swagger UI available at /swagger/")
+	app.Get("/api/tickets/swagger/*", swagger.HandlerDefault)
+	fmt.Println("Swagger UI available at /api/tickets/swagger/")
 
 	app.Use(recover.New())
 

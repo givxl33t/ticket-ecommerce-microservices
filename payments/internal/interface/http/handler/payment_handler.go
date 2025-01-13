@@ -28,6 +28,7 @@ func NewPaymentHandler(paymentUsecase usecase.PaymentUsecase, log *logrus.Logger
 // @Produce json
 // @Param request body model.PaymentRequest true "Payment Create Request"
 // @Success 201 {object} model.PaymentResponse
+// @Security Session
 // @Router /payments [post]
 func (h *PaymentHandler) Create(c *fiber.Ctx) error {
 	createPaymentRequest := new(model.PaymentRequest)

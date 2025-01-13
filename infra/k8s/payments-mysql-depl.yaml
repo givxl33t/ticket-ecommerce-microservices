@@ -6,7 +6,7 @@ metadata:
     type: local # Sets the type of volume
     app: payments-mysql
 spec:
-  storageClassName: manual
+  storageClassName: payments-mysql-class # Sets the storage class to be used for PVC
   capacity:
     storage: 1Gi # Sets the volume size
   accessModes:
@@ -21,12 +21,15 @@ metadata:
   labels:
     app: payments-mysql
 spec:
-  storageClassName: manual
+  storageClassName: payments-mysql-class
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
+  selector:
+    matchLabels:
+      app: payments-mysql
 ---
 apiVersion: apps/v1
 kind: Deployment

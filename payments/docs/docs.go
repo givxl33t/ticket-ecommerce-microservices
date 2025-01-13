@@ -25,6 +25,11 @@ const docTemplate = `{
     "paths": {
         "/payments": {
             "post": {
+                "security": [
+                    {
+                        "Session": []
+                    }
+                ],
                 "description": "Create a new payment.",
                 "consumes": [
                     "application/json"

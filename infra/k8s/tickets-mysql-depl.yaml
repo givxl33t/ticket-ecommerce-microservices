@@ -6,7 +6,7 @@ metadata:
     type: local # Sets the type of volume
     app: tickets-mysql
 spec:
-  storageClassName: manual
+  storageClassName: tickets-mysql-class # Sets the storage class to be used for PVC
   capacity:
     storage: 1Gi # Sets the volume size
   accessModes:
@@ -21,12 +21,15 @@ metadata:
   labels:
     app: tickets-mysql
 spec:
-  storageClassName: manual
+  storageClassName: tickets-mysql-class
   accessModes:
     - ReadWriteOnce # Sets read and write access
   resources:
     requests:
       storage: 1Gi
+  selector:
+    matchLabels:
+      app: tickets-mysql
 ---
 apiVersion: apps/v1
 kind: Deployment
