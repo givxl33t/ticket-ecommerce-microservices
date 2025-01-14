@@ -9,7 +9,7 @@ const swaggerConfig = swagger({
   path: "/api/users/swagger",
   documentation: {
     info: {
-      title: "Bun Elysia Sandbox API Docs",
+      title: "Authentication API Docs",
       version: config.app.version,
     },
     tags: [
